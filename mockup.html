@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KidsBooks — UI/UX Mockup</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Nunito','Segoe UI',system-ui,sans-serif; }
+  body { background:#EDE7DC; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:24px; gap:16px; }
+  h1.pagetitle { color:#2D2A32; font-size:20px; }
+  .toolbar { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+  .toolbar button { border:none; background:#fff; border-radius:20px; padding:8px 14px; font-weight:700; cursor:pointer; color:#2D2A32; box-shadow:0 2px 6px rgba(0,0,0,.08); font-size:13px; }
+  .toolbar button.active { background:#FF6B57; color:#fff; }
+  .phone { width:390px; height:800px; background:#FFF8EF; border-radius:44px; box-shadow:0 20px 60px rgba(0,0,0,.25); overflow:hidden; position:relative; border:10px solid #2D2A32; }
+  .notch { position:absolute; top:0; left:50%; transform:translateX(-50%); width:140px; height:26px; background:#2D2A32; border-radius:0 0 16px 16px; z-index:50; }
+  .screen { display:none; height:100%; overflow-y:auto; padding:44px 18px 92px; }
+  .screen.active { display:block; }
+  /* bottom nav */
+  .bottomnav { position:absolute; bottom:0; left:0; right:0; height:74px; background:#fff; display:flex; border-radius:28px 28px 0 0; box-shadow:0 -4px 20px rgba(0,0,0,.08); z-index:40; }
+  .bottomnav div { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; font-size:10px; color:#9A93A5; font-weight:700; }
+  .bottomnav div.on { color:#FF6B57; }
+  .bottomnav .ico { font-size:22px; }
+  /* shared */
+  .h { font-size:22px; font-weight:900; color:#2D2A32; margin-bottom:4px; }
+  .sub { color:#8B8496; font-size:13px; margin-bottom:14px; }
+  .chip { display:inline-block; padding:6px 14px; border-radius:18px; background:#fff; font-size:12px; font-weight:800; color:#2D2A32; margin:0 6px 8px 0; box-shadow:0 1px 4px rgba(0,0,0,.06); cursor:pointer; }
+  .chip.sel { background:#2EC4B6; color:#fff; }
+  .row { display:flex; gap:12px; overflow-x:auto; padding-bottom:6px; }
+  .bookcard { min-width:128px; width:128px; cursor:pointer; }
+  .cover { height:150px; border-radius:18px; display:flex; align-items:center; justify-content:center; font-size:44px; box-shadow:0 6px 14px rgba(0,0,0,.12); position:relative; }
+  .agebadge { position:absolute; top:8px; left:8px; font-size:10px; font-weight:900; padding:3px 8px; border-radius:10px; color:#2D2A32; }
+  .bt { font-size:13px; font-weight:800; color:#2D2A32; margin-top:8px; line-height:1.25; }
+  .bp { font-size:13px; font-weight:900; color:#FF6B57; }
+  .stars { color:#FFC94D; font-size:12px; }
+  .btn { display:block; width:100%; border:none; background:#FF6B57; color:#fff; font-weight:900; font-size:16px; padding:15px; border-radius:18px; cursor:pointer; box-shadow:0 6px 16px rgba(255,107,87,.4); }
+  .btn.ghost { background:#fff; color:#FF6B57; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+  .card { background:#fff; border-radius:20px; padding:16px; margin-bottom:12px; box-shadow:0 3px 10px rgba(0,0,0,.06); }
+  .searchbar { background:#fff; border-radius:18px; padding:13px 16px; color:#9A93A5; font-weight:700; font-size:14px; margin-bottom:14px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+  .topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .avatar { width:40px; height:40px; border-radius:14px; background:#FFC94D; display:flex; align-items:center; justify-content:center; font-size:20px; }
+  .back { background:#fff; border:none; border-radius:12px; width:38px; height:38px; font-size:16px; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,.08); }
+  .qty { display:flex; align-items:center; gap:10px; }
+  .qty button { width:28px; height:28px; border-radius:9px; border:none; background:#FFF1E8; color:#FF6B57; font-weight:900; cursor:pointer; }
+  .timeline { list-style:none; }
+  .timeline li { display:flex; gap:12px; padding-bottom:22px; position:relative; }
+  .timeline li:before { content:""; position:absolute; left:13px; top:28px; bottom:0; width:3px; background:#EFE7DC; border-radius:2px; }
+  .timeline li:last-child:before { display:none; }
+  .dot { width:28px; height:28px; border-radius:50%; background:#EFE7DC; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; z-index:1; }
+  .dot.done { background:#2EC4B6; color:#fff; }
+  .qr { width:180px; height:180px; margin:14px auto; border-radius:16px; background:
+      repeating-linear-gradient(0deg,#2D2A32 0 8px,#fff 8px 16px),
+      repeating-linear-gradient(90deg,#2D2A32 0 8px,#fff 8px 16px);
+      background-blend-mode:screen; border:10px solid #fff; box-shadow:0 4px 14px rgba(0,0,0,.12); }
+  .banklogos { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+  .banklogos span { background:#fff; border-radius:12px; padding:8px 12px; font-size:11px; font-weight:800; box-shadow:0 2px 6px rgba(0,0,0,.07); cursor:pointer; }
+  .kidcard { border-radius:22px; padding:18px; display:flex; align-items:center; gap:14px; margin-bottom:12px; cursor:pointer; }
+  .readerpage { background:#fff; border-radius:18px; padding:22px; box-shadow:0 4px 16px rgba(0,0,0,.1); min-height:430px; font-size:17px; line-height:1.8; color:#2D2A32; }
+  .langrow { display:flex; align-items:center; justify-content:space-between; background:#fff; border-radius:16px; padding:14px 16px; margin-bottom:10px; cursor:pointer; font-weight:800; color:#2D2A32; box-shadow:0 2px 6px rgba(0,0,0,.05); }
+  .langrow.sel { outline:3px solid #2EC4B6; }
+  .note { text-align:center; font-size:11px; color:#B7AFC2; margin-top:10px; }
+</style>
+</head>
+<body>
+<h1 class="pagetitle">📚 KidsBooks — Mobile App UI Mockup</h1>
+<div class="toolbar" id="screenBtns"></div>
+<div class="toolbar" id="langBtns"></div>
+
+<div class="phone">
+  <div class="notch"></div>
+
+  <!-- HOME -->
+  <div class="screen active" id="scr-home">
+    <div class="topbar">
+      <div><div class="h" data-i="hello">Сайн уу, Ана! 👋</div><div class="sub" data-i="findbook">Өнөөдөр ямар ном унших вэ?</div></div>
+      <div class="avatar">🦊</div>
+    </div>
+    <div class="searchbar" onclick="go('search')">🔍 <span data-i="search">Ном хайх...</span></div>
+    <div style="margin-bottom:6px">
+      <span class="chip sel" data-i="all">Бүгд</span><span class="chip">0–2</span><span class="chip">3–5</span><span class="chip">6–8</span><span class="chip">9–12</span>
+    </div>
+    <div class="h" style="font-size:17px" data-i="featured">Онцлох номнууд</div>
+    <div class="row" id="featRow"></div>
+    <div class="h" style="font-size:17px;margin-top:14px" data-i="newbooks">Шинэ ирсэн</div>
+    <div class="row" id="newRow"></div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="screen" id="scr-search">
+    <div class="topbar"><button class="back" onclick="go('home')">←</button><div class="h" style="font-size:18px" data-i="search2">Хайлт</div><div style="width:38px"></div></div>
+    <div class="searchbar">🔍 <b style="color:#2D2A32">далай</b></div>
+    <div style="margin-bottom:10px">
+      <span class="chip sel" data-i="lang_mn">Монгол</span><span class="chip">English</span><span class="chip">한국어</span><span class="chip" data-i="ebook">Цахим ном</span><span class="chip">3–5</span>
+    </div>
+    <div class="card" onclick="go('detail')" style="display:flex;gap:14px;cursor:pointer">
+      <div class="cover" style="width:74px;height:96px;min-width:74px;background:#BDE8F5;font-size:30px">🐋</div>
+      <div><div class="bt">Далайн Адал Явдал</div><div class="stars">★★★★★ <span style="color:#9A93A5">4.9 (128)</span></div>
+      <div class="bp">₮24,900</div><div class="sub" style="margin:0;font-size:11px">3–5 · Монгол · 📖+📱</div></div>
+    </div>
+    <div class="card" style="display:flex;gap:14px">
+      <div class="cover" style="width:74px;height:96px;min-width:74px;background:#FFE3B3;font-size:30px">🦕</div>
+      <div><div class="bt">Далайн Ёроолын Динозавр</div><div class="stars">★★★★☆ <span style="color:#9A93A5">4.5 (61)</span></div>
+      <div class="bp">₮19,900</div><div class="sub" style="margin:0;font-size:11px">6–8 · Монгол · 📖</div></div>
+    </div>
+  </div>
+
+  <!-- DETAIL -->
+  <div class="screen" id="scr-detail">
+    <div class="topbar"><button class="back" onclick="go('home')">←</button><div></div><button class="back">♡</button></div>
+    <div class="cover" style="width:190px;height:240px;margin:0 auto 14px;background:#BDE8F5;font-size:80px">🐋<span class="agebadge" style="background:#BFF0E4">3–5</span></div>
+    <div class="h" style="text-align:center">Далайн Адал Явдал</div>
+    <div class="sub" style="text-align:center">Б. Сарнай · <span class="stars">★★★★★</span> 4.9 (128)</div>
+    <div style="display:flex;gap:10px;margin-bottom:12px">
+      <div class="card" style="flex:1;text-align:center;margin:0;outline:3px solid #FF6B57"><div style="font-size:20px">📖</div><b data-i="paper">Цаасан</b><div class="bp">₮24,900</div></div>
+      <div class="card" style="flex:1;text-align:center;margin:0"><div style="font-size:20px">📱</div><b data-i="ebook">Цахим</b><div class="bp">₮12,900</div></div>
+    </div>
+    <div class="card"><b data-i="about">Тухай:</b> <span data-i="desc">Бяцхан загас Нэмо далайн гүнд шинэ найзуудтай болж, эрэлхэг аялалд гардаг тухай зурагт ном.</span></div>
+    <div class="card"><b data-i="reviews">Сэтгэгдэл (128)</b>
+      <div style="margin-top:8px;font-size:13px"><b>Болормаа</b> <span class="stars">★★★★★</span> ✅<br><span style="color:#6f6880">Хүү маань маш их таалагдсан!</span></div>
+    </div>
+    <button class="btn" onclick="go('cart')" data-i="addcart">Сагсанд нэмэх — ₮24,900</button>
+  </div>
+
+  <!-- CART -->
+  <div class="screen" id="scr-cart">
+    <div class="topbar"><button class="back" onclick="go('detail')">←</button><div class="h" style="font-size:18px" data-i="cart">Сагс</div><div style="width:38px"></div></div>
+    <div class="card" style="display:flex;gap:12px;align-items:center">
+      <div class="cover" style="width:56px;height:72px;min-width:56px;background:#BDE8F5;font-size:24px">🐋</div>
+      <div style="flex:1"><div class="bt">Далайн Адал Явдал</div><div class="sub" style="margin:0;font-size:11px" data-i="paper">Цаасан</div><div class="bp">₮24,900</div></div>
+      <div class="qty"><button>−</button><b>1</b><button>+</button></div>
+    </div>
+    <div class="card" style="display:flex;gap:12px;align-items:center">
+      <div class="cover" style="width:56px;height:72px;min-width:56px;background:#E6D7FF;font-size:24px">🚀</div>
+      <div style="flex:1"><div class="bt">Сансрын Аялагч</div><div class="sub" style="margin:0;font-size:11px" data-i="ebook">Цахим</div><div class="bp">₮9,900</div></div>
+      <div class="qty"><button>−</button><b>1</b><button>+</button></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between"><span data-i="subtotal">Дүн</span><b>₮34,800</b></div>
+      <div style="display:flex;justify-content:space-between"><span data-i="delivery">Хүргэлт (УБ төв)</span><b>₮5,000</b></div>
+      <div style="display:flex;justify-content:space-between;font-size:17px;margin-top:6px"><b data-i="total">Нийт</b><b style="color:#FF6B57">₮39,800</b></div>
+    </div>
+    <button class="btn" onclick="go('checkout')" data-i="checkout">Худалдан авах</button>
+  </div>
+
+  <!-- CHECKOUT / QPAY -->
+  <div class="screen" id="scr-checkout">
+    <div class="topbar"><button class="back" onclick="go('cart')">←</button><div class="h" style="font-size:18px" data-i="payment">Төлбөр</div><div style="width:38px"></div></div>
+    <div class="card"><b data-i="address">📍 Хүргэлтийн хаяг</b><div class="sub" style="margin:4px 0 0">СБД, 8-р хороо, 45-12 · 9911xxxx</div></div>
+    <div class="card" style="text-align:center">
+      <img src="" alt="" style="display:none">
+      <b style="color:#2D2A32;font-size:16px">QPay — ₮39,800</b>
+      <div class="qr"></div>
+      <div class="sub" data-i="scanqr">Банкны аппаараа уншуулна уу</div>
+      <div class="banklogos"><span>🏦 Хаан</span><span>🏦 Голомт</span><span>🏦 ХХБ</span><span>🏦 Төрийн</span><span>SocialPay</span></div>
+    </div>
+    <button class="btn" onclick="go('track')" data-i="paycheck">Төлбөр шалгах</button>
+    <div class="note" data-i="autonote">Төлбөр амжилттай болмогц захиалга автоматаар баталгаажна</div>
+  </div>
+
+  <!-- ORDER TRACKING -->
+  <div class="screen" id="scr-track">
+    <div class="topbar"><button class="back" onclick="go('home')">←</button><div class="h" style="font-size:18px" data-i="order">Захиалга #10245</div><div style="width:38px"></div></div>
+    <div class="card" style="background:#E6F9F1"><b>✅ <span data-i="paidok">Төлбөр амжилттай!</span></b><div class="sub" style="margin:2px 0 0">QPay · 2026-07-22 14:32</div></div>
+    <div class="card">
+      <ul class="timeline">
+        <li><div class="dot done">✓</div><div><b data-i="st_paid">Төлөгдсөн</b><div class="sub" style="margin:0">14:32</div></div></li>
+        <li><div class="dot done">📦</div><div><b data-i="st_pack">Баглаж байна</b><div class="sub" style="margin:0">15:10</div></div></li>
+        <li><div class="dot">🚚</div><div><b data-i="st_ship">Хүргэлтэнд гарсан</b></div></li>
+        <li><div class="dot">🏠</div><div><b data-i="st_done">Хүргэгдсэн</b></div></li>
+      </ul>
+    </div>
+    <div class="card" style="display:flex;gap:12px;align-items:center">
+      <div class="cover" style="width:50px;height:64px;min-width:50px;background:#E6D7FF;font-size:22px">🚀</div>
+      <div style="flex:1"><b style="font-size:13px">Сансрын Аялагч</b><div class="sub" style="margin:0;font-size:11px" data-i="ebookready">Цахим ном бэлэн боллоо!</div></div>
+      <button class="btn" style="width:auto;padding:10px 14px;font-size:13px" onclick="go('reader')" data-i="read">Унших</button>
+    </div>
+  </div>
+
+  <!-- KIDS PROFILES -->
+  <div class="screen" id="scr-kids">
+    <div class="topbar"><button class="back" onclick="go('home')">←</button><div class="h" style="font-size:18px" data-i="kids">Хүүхдийн профайл</div><div style="width:38px"></div></div>
+    <div class="kidcard" style="background:#FFE9D6"><div class="avatar" style="width:54px;height:54px;font-size:28px">🦊</div>
+      <div style="flex:1"><b style="font-size:16px">Тэмүүлэн</b><div class="sub" style="margin:0">6–8 · <span data-i="books12">12 ном уншсан</span></div></div>
+      <span class="chip sel" style="margin:0" data-i="kidmode">Kid Mode</span></div>
+    <div class="kidcard" style="background:#DFF3FF"><div class="avatar" style="width:54px;height:54px;font-size:28px;background:#BDE8F5">🐰</div>
+      <div style="flex:1"><b style="font-size:16px">Анужин</b><div class="sub" style="margin:0">3–5 · <span data-i="books5">5 ном уншсан</span></div></div>
+      <span class="chip" style="margin:0" data-i="kidmode">Kid Mode</span></div>
+    <button class="btn ghost" data-i="addkid">+ Профайл нэмэх</button>
+    <div class="card" style="margin-top:12px;background:#FFF4D9"><b>🔔 <span data-i="wish">Анужин "Оддын Үлгэр" номыг хүсэж байна</span></b>
+      <button class="btn" style="margin-top:10px;padding:11px;font-size:14px" data-i="buynow">Худалдаж авах — ₮14,900</button></div>
+    <div class="note" data-i="pinnote">Kid Mode-оос гарахад эцэг эхийн PIN шаардана</div>
+  </div>
+
+  <!-- READER -->
+  <div class="screen" id="scr-reader" style="background:#FFFDF7">
+    <div class="topbar"><button class="back" onclick="go('track')">←</button><b style="font-size:14px">Сансрын Аялагч · 12/48</b><button class="back">Aa</button></div>
+    <div class="readerpage">
+      <div style="text-align:center;font-size:64px;margin-bottom:14px">🚀🪐</div>
+      <p><b>12-р хуудас.</b></p>
+      <p style="margin-top:8px">Бяцхан Түвшин пуужиндаа суугаад тоолов: «Гурав… хоёр… нэг!» Пуужин том дуу гарган огторгуй өөд хөөрлөө.</p>
+      <p style="margin-top:8px">Одод түүнийг угтан гялалзаж, саран эмээ инээмсэглэв…</p>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="btn ghost" style="flex:1">←</button>
+      <button class="btn" style="flex:1">→</button>
+    </div>
+    <div class="note">EPUB · offline · <span data-i="saved">хуудас автоматаар хадгалагдана</span></div>
+  </div>
+
+  <!-- SETTINGS / LANGUAGE -->
+  <div class="screen" id="scr-lang">
+    <div class="topbar"><button class="back" onclick="go('home')">←</button><div class="h" style="font-size:18px" data-i="chooselang">Хэл сонгох</div><div style="width:38px"></div></div>
+    <div id="langList"></div>
+    <div class="note" data-i="langnote">Интерфэйсийн хэл — номын хэлийг тусад нь шүүнэ</div>
+  </div>
+
+  <div class="bottomnav">
+    <div class="on" onclick="go('home')"><span class="ico">🏠</span><span data-i="nav_home">Нүүр</span></div>
+    <div onclick="go('search')"><span class="ico">🔍</span><span data-i="nav_search">Хайх</span></div>
+    <div onclick="go('reader')"><span class="ico">📚</span><span data-i="nav_lib">Номын сан</span></div>
+    <div onclick="go('track')"><span class="ico">🧾</span><span data-i="nav_orders">Захиалга</span></div>
+    <div onclick="go('kids')"><span class="ico">👨‍👩‍👧</span><span data-i="nav_profile">Профайл</span></div>
+  </div>
+</div>
+
+<script>
+const screens = [
+  ['home','🏠 Home'],['search','🔍 Search'],['detail','📕 Book'],['cart','🛒 Cart'],
+  ['checkout','💳 QPay'],['track','🚚 Order'],['kids','👧 Kids'],['reader','📖 Reader'],['lang','🌐 Language']
+];
+const langs = { mn:'🇲🇳 Монгол', en:'🇬🇧 English', fr:'🇫🇷 Français', es:'🇪🇸 Español', ko:'🇰🇷 한국어', zh:'🇨🇳 中文', ru:'🇷🇺 Русский' };
+const T = {
+ hello:{mn:'Сайн уу, Ана! 👋',en:'Hi, Ana! 👋',fr:'Salut, Ana ! 👋',es:'¡Hola, Ana! 👋',ko:'안녕, 아나! 👋',zh:'你好，安娜！👋',ru:'Привет, Ана! 👋'},
+ findbook:{mn:'Өнөөдөр ямар ном унших вэ?',en:'What shall we read today?',fr:'Que lirons-nous aujourd’hui ?',es:'¿Qué leemos hoy?',ko:'오늘은 어떤 책을 읽을까요?',zh:'今天读什么书？',ru:'Что почитаем сегодня?'},
+ search:{mn:'Ном хайх...',en:'Search books...',fr:'Rechercher...',es:'Buscar libros...',ko:'책 검색...',zh:'搜索图书...',ru:'Поиск книг...'},
+ search2:{mn:'Хайлт',en:'Search',fr:'Recherche',es:'Búsqueda',ko:'검색',zh:'搜索',ru:'Поиск'},
+ all:{mn:'Бүгд',en:'All',fr:'Tous',es:'Todos',ko:'전체',zh:'全部',ru:'Все'},
+ featured:{mn:'Онцлох номнууд',en:'Featured books',fr:'Livres en vedette',es:'Libros destacados',ko:'추천 도서',zh:'精选图书',ru:'Рекомендуемые'},
+ newbooks:{mn:'Шинэ ирсэн',en:'New arrivals',fr:'Nouveautés',es:'Novedades',ko:'신간 도서',zh:'新书上架',ru:'Новинки'},
+ paper:{mn:'Цаасан',en:'Paperback',fr:'Papier',es:'Impreso',ko:'종이책',zh:'纸质书',ru:'Бумажная'},
+ ebook:{mn:'Цахим',en:'E-book',fr:'E-book',es:'E-book',ko:'전자책',zh:'电子书',ru:'Эл. книга'},
+ about:{mn:'Тухай:',en:'About:',fr:'À propos :',es:'Acerca de:',ko:'소개:',zh:'简介：',ru:'Описание:'},
+ desc:{mn:'Бяцхан загас далайн гүнд шинэ найзуудтай болж, эрэлхэг аялалд гардаг тухай зурагт ном.',en:'A picture book about a little fish who makes new friends in the deep sea and sets off on a brave adventure.',fr:'Un album sur un petit poisson qui se fait de nouveaux amis et part à l’aventure.',es:'Un libro ilustrado sobre un pececito que hace nuevos amigos y vive una valiente aventura.',ko:'깊은 바다에서 새 친구를 사귀고 용감한 모험을 떠나는 아기 물고기 그림책.',zh:'一本关于小鱼在深海结交新朋友并踏上勇敢冒险的绘本。',ru:'Книжка о рыбке, которая нашла друзей и отправилась в смелое приключение.'},
+ reviews:{mn:'Сэтгэгдэл (128)',en:'Reviews (128)',fr:'Avis (128)',es:'Reseñas (128)',ko:'리뷰 (128)',zh:'评论 (128)',ru:'Отзывы (128)'},
+ addcart:{mn:'Сагсанд нэмэх — ₮24,900',en:'Add to cart — ₮24,900',fr:'Ajouter — ₮24 900',es:'Añadir — ₮24,900',ko:'장바구니 담기 — ₮24,900',zh:'加入购物车 — ₮24,900',ru:'В корзину — ₮24 900'},
+ cart:{mn:'Сагс',en:'Cart',fr:'Panier',es:'Carrito',ko:'장바구니',zh:'购物车',ru:'Корзина'},
+ subtotal:{mn:'Дүн',en:'Subtotal',fr:'Sous-total',es:'Subtotal',ko:'소계',zh:'小计',ru:'Сумма'},
+ delivery:{mn:'Хүргэлт (УБ төв)',en:'Delivery (UB central)',fr:'Livraison (UB)',es:'Envío (UB)',ko:'배송 (UB 중심)',zh:'配送（UB市中心）',ru:'Доставка (УБ)'},
+ total:{mn:'Нийт',en:'Total',fr:'Total',es:'Total',ko:'합계',zh:'总计',ru:'Итого'},
+ checkout:{mn:'Худалдан авах',en:'Checkout',fr:'Commander',es:'Pagar',ko:'결제하기',zh:'去结算',ru:'Оформить'},
+ payment:{mn:'Төлбөр',en:'Payment',fr:'Paiement',es:'Pago',ko:'결제',zh:'支付',ru:'Оплата'},
+ address:{mn:'📍 Хүргэлтийн хаяг',en:'📍 Delivery address',fr:'📍 Adresse de livraison',es:'📍 Dirección de envío',ko:'📍 배송 주소',zh:'📍 收货地址',ru:'📍 Адрес доставки'},
+ scanqr:{mn:'Банкны аппаараа уншуулна уу',en:'Scan with your banking app',fr:'Scannez avec votre appli bancaire',es:'Escanea con tu app bancaria',ko:'은행 앱으로 스캔하세요',zh:'请用银行APP扫码',ru:'Отсканируйте банковским приложением'},
+ paycheck:{mn:'Төлбөр шалгах',en:'Check payment',fr:'Vérifier le paiement',es:'Verificar pago',ko:'결제 확인',zh:'检查付款',ru:'Проверить оплату'},
+ autonote:{mn:'Төлбөр амжилттай болмогц захиалга автоматаар баталгаажна',en:'Order confirms automatically once payment succeeds',fr:'La commande se confirme automatiquement après paiement',es:'El pedido se confirma automáticamente al pagar',ko:'결제가 완료되면 주문이 자동 확정됩니다',zh:'付款成功后订单将自动确认',ru:'Заказ подтвердится автоматически после оплаты'},
+ order:{mn:'Захиалга #10245',en:'Order #10245',fr:'Commande #10245',es:'Pedido #10245',ko:'주문 #10245',zh:'订单 #10245',ru:'Заказ #10245'},
+ paidok:{mn:'Төлбөр амжилттай!',en:'Payment successful!',fr:'Paiement réussi !',es:'¡Pago exitoso!',ko:'결제 성공!',zh:'支付成功！',ru:'Оплата прошла!'},
+ st_paid:{mn:'Төлөгдсөн',en:'Paid',fr:'Payé',es:'Pagado',ko:'결제됨',zh:'已支付',ru:'Оплачен'},
+ st_pack:{mn:'Баглаж байна',en:'Packing',fr:'Préparation',es:'Empacando',ko:'포장 중',zh:'打包中',ru:'Упаковка'},
+ st_ship:{mn:'Хүргэлтэнд гарсан',en:'Shipped',fr:'Expédié',es:'Enviado',ko:'배송 중',zh:'已发货',ru:'В пути'},
+ st_done:{mn:'Хүргэгдсэн',en:'Delivered',fr:'Livré',es:'Entregado',ko:'배송 완료',zh:'已送达',ru:'Доставлен'},
+ ebookready:{mn:'Цахим ном бэлэн боллоо!',en:'E-book is ready!',fr:'E-book prêt !',es:'¡E-book listo!',ko:'전자책 준비 완료!',zh:'电子书已就绪！',ru:'Эл. книга готова!'},
+ read:{mn:'Унших',en:'Read',fr:'Lire',es:'Leer',ko:'읽기',zh:'阅读',ru:'Читать'},
+ kids:{mn:'Хүүхдийн профайл',en:'Kids profiles',fr:'Profils enfants',es:'Perfiles infantiles',ko:'아이 프로필',zh:'儿童档案',ru:'Детские профили'},
+ kidmode:{mn:'Kid Mode',en:'Kid Mode',fr:'Mode Enfant',es:'Modo Niños',ko:'키즈 모드',zh:'儿童模式',ru:'Детский режим'},
+ addkid:{mn:'+ Профайл нэмэх',en:'+ Add profile',fr:'+ Ajouter un profil',es:'+ Añadir perfil',ko:'+ 프로필 추가',zh:'+ 添加档案',ru:'+ Добавить профиль'},
+ books12:{mn:'12 ном уншсан',en:'12 books read',fr:'12 livres lus',es:'12 libros leídos',ko:'12권 읽음',zh:'已读12本',ru:'Прочитано 12 книг'},
+ books5:{mn:'5 ном уншсан',en:'5 books read',fr:'5 livres lus',es:'5 libros leídos',ko:'5권 읽음',zh:'已读5本',ru:'Прочитано 5 книг'},
+ wish:{mn:'Анужин «Оддын Үлгэр» номыг хүсэж байна',en:'Anujin wants “Star Tales”',fr:'Anujin veut « Contes d’étoiles »',es:'Anujin quiere “Cuentos de estrellas”',ko:'아누진이 “별 이야기”를 원해요',zh:'安努金想要《星星故事》',ru:'Анужин хочет «Звёздные сказки»'},
+ buynow:{mn:'Худалдаж авах — ₮14,900',en:'Buy now — ₮14,900',fr:'Acheter — ₮14 900',es:'Comprar — ₮14,900',ko:'구매 — ₮14,900',zh:'购买 — ₮14,900',ru:'Купить — ₮14 900'},
+ pinnote:{mn:'Kid Mode-оос гарахад эцэг эхийн PIN шаардана',en:'Exiting Kid Mode requires parent PIN',fr:'Quitter le Mode Enfant nécessite le PIN parental',es:'Salir del Modo Niños requiere PIN parental',ko:'키즈 모드 종료 시 부모 PIN 필요',zh:'退出儿童模式需要家长PIN码',ru:'Выход из детского режима — по PIN родителя'},
+ saved:{mn:'хуудас автоматаар хадгалагдана',en:'page auto-saved',fr:'page sauvegardée',es:'página guardada',ko:'페이지 자동 저장',zh:'页面自动保存',ru:'страница сохраняется'},
+ chooselang:{mn:'Хэл сонгох',en:'Choose language',fr:'Choisir la langue',es:'Elegir idioma',ko:'언어 선택',zh:'选择语言',ru:'Выбор языка'},
+ langnote:{mn:'Интерфэйсийн хэл — номын хэлийг тусад нь шүүнэ',en:'UI language — book language is filtered separately',fr:'Langue de l’interface — la langue des livres se filtre à part',es:'Idioma de la interfaz — el idioma de los libros se filtra aparte',ko:'인터페이스 언어 — 도서 언어는 별도 필터',zh:'界面语言 — 图书语言单独筛选',ru:'Язык интерфейса — язык книг фильтруется отдельно'},
+ nav_home:{mn:'Нүүр',en:'Home',fr:'Accueil',es:'Inicio',ko:'홈',zh:'首页',ru:'Главная'},
+ nav_search:{mn:'Хайх',en:'Search',fr:'Recherche',es:'Buscar',ko:'검색',zh:'搜索',ru:'Поиск'},
+ nav_lib:{mn:'Номын сан',en:'Library',fr:'Bibliothèque',es:'Biblioteca',ko:'내 서재',zh:'书库',ru:'Библиотека'},
+ nav_orders:{mn:'Захиалга',en:'Orders',fr:'Commandes',es:'Pedidos',ko:'주문',zh:'订单',ru:'Заказы'},
+ nav_profile:{mn:'Профайл',en:'Profile',fr:'Profil',es:'Perfil',ko:'프로필',zh:'我的',ru:'Профиль'},
+ lang_mn:{mn:'Монгол',en:'Mongolian',fr:'Mongol',es:'Mongol',ko:'몽골어',zh:'蒙古语',ru:'Монгольский'},
+};
+let cur = 'mn';
+const books = [
+  ['🐋','#BDE8F5','Далайн Адал Явдал','₮24,900','3–5','#BFF0E4'],
+  ['🚀','#E6D7FF','Сансрын Аялагч','₮12,900','6–8','#FFE3B3'],
+  ['🦁','#FFE3B3','Арслан Багш','₮18,500','3–5','#BFF0E4'],
+  ['🐻','#FFD9CF','Баавгайн Зул','₮15,900','0–2','#D9F7E8'],
+];
+const news = [
+  ['🌙','#D9E8FF','Сарны Хүү','₮21,000','9–12','#EBDFFF'],
+  ['🦄','#FFE0F0','Гоо Юникорн','₮17,900','3–5','#BFF0E4'],
+  ['🐉','#DFF7D9','Лугийн Нууц','₮23,500','6–8','#FFE3B3'],
+];
+function bookHTML(b){return `<div class="bookcard" onclick="go('detail')">
+  <div class="cover" style="background:${b[1]}">${b[0]}<span class="agebadge" style="background:${b[5]}">${b[4]}</span></div>
+  <div class="bt">${b[2]}</div><div class="stars">★★★★★</div><div class="bp">${b[3]}</div></div>`;}
+document.getElementById('featRow').innerHTML = books.map(bookHTML).join('');
+document.getElementById('newRow').innerHTML = news.map(bookHTML).join('');
+const sb = document.getElementById('screenBtns');
+screens.forEach(([id,label],i)=>{
+  const b=document.createElement('button'); b.textContent=label; if(i===0)b.classList.add('active');
+  b.onclick=()=>go(id); b.dataset.scr=id; sb.appendChild(b);
+});
+const lb = document.getElementById('langBtns');
+Object.entries(langs).forEach(([code,label])=>{
+  const b=document.createElement('button'); b.textContent=label; if(code===cur)b.classList.add('active');
+  b.onclick=()=>setLang(code); b.dataset.lang=code; lb.appendChild(b);
+});
+const ll = document.getElementById('langList');
+Object.entries(langs).forEach(([code,label])=>{
+  const d=document.createElement('div'); d.className='langrow'+(code===cur?' sel':'');
+  d.innerHTML=`<span>${label}</span><span>${code===cur?'✅':''}</span>`;
+  d.onclick=()=>setLang(code); d.dataset.lang=code; ll.appendChild(d);
+});
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('scr-'+id).classList.add('active');
+  sb.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.scr===id));
+  document.querySelectorAll('.bottomnav div').forEach(d=>d.classList.remove('on'));
+  const navMap={home:0,search:1,reader:2,track:3,kids:4};
+  if(id in navMap) document.querySelectorAll('.bottomnav > div')[navMap[id]].classList.add('on');
+}
+function setLang(code){
+  cur=code;
+  document.querySelectorAll('[data-i]').forEach(el=>{ const k=el.dataset.i; if(T[k]&&T[k][code]) el.textContent=T[k][code]; });
+  lb.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.lang===code));
+  ll.querySelectorAll('.langrow').forEach(r=>{ r.classList.toggle('sel',r.dataset.lang===code); r.querySelector('span:last-child').textContent=r.dataset.lang===code?'✅':''; });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+    function isAdmin() { return signedIn() && request.auth.token.admin == true; }
+
+    match /users/{uid} {
+      allow read, write: if isOwner(uid);
+      match /kidsProfiles/{kidId} { allow read, write: if isOwner(uid); }
+      match /addresses/{addrId}   { allow read, write: if isOwner(uid); }
+      match /notifications/{nId}  { allow read, update: if isOwner(uid); }
+    }
+
+    match /books/{bookId} {
+      allow read: if resource.data.isActive == true || isAdmin();
+      allow write: if isAdmin();
+
+      match /reviews/{reviewId} {
+        // Reviews are created via Cloud Function (verified purchase check);
+        // clients may only read approved ones.
+        allow read: if resource.data.status == 'approved' || isAdmin();
+        allow write: if false;
+      }
+    }
+
+    match /orders/{orderId} {
+      // Orders are created ONLY via the createOrder callable
+      // (server computes prices). Clients can read their own.
+      allow read: if isOwner(resource.data.uid) || isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    match /library/{uid}/books/{bookId} {
+      // Entitlements written only by Cloud Functions.
+      allow read: if isOwner(uid);
+      allow write: if false;
+    }
+  }
+}

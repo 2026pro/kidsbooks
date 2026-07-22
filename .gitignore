@@ -1,0 +1,10 @@
+# Flutter/Dart
+kidsbooks_app/.dart_tool/
+kidsbooks_app/build/
+kidsbooks_app/.flutter-plugins*
+kidsbooks_app/lib/firebase_options.dart
+# Node
+kidsbooks_app/functions/node_modules/
+# Misc
+*.zip
+.DS_Store
