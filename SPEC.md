@@ -32,6 +32,15 @@ KidsBooks is a mobile bookstore for children's books, serving parents and kids i
 - Full-text search (title, author, keyword) with filters: book language, age group, format (paper / e-book / both), price range.
 - Book detail page: cover gallery, description (localized when available), age badge, language badge, format & price options, ratings & reviews, "similar books".
 
+### 2.1b First-launch onboarding & personalization
+Flow (before any catalog access): **Language → Age + Gender → Avatar → App skin → Home.**
+1. **Language screen (first screen, language only):** scrollable list of the 7 UI languages in their native names; selection immediately switches the whole app to that language and advances.
+2. **Age & gender:** age band (0–2 / 3–5 / 6–8 / 9–12) and gender (boy / girl / prefer not to say). Age drives default catalog filtering and avatar set; gender only tunes recommendations (never restricts catalog).
+3. **Avatar picker:** age-appropriate sets of fairy-tale heroes, animals, and characters (e.g. 0–2: baby animals; 3–5: friendly animals/unicorn; 6–8: heroes, fairies, dragons, robots; 9–12: wizards, detectives, adventurers).
+4. **App skin picker:** whole-app theme (background, primary/secondary colors, dark/light ink) applied via ThemeData: Classic, Pink Princess, Super Hero, Wizard School, Nature, Ocean, Calm, Spooky, Fairy-tale Palace. Changeable later in settings; stored per kid profile.
+   > ⚠️ **IP note:** "Barbie", "Spider-Man", "Harry Potter" are licensed brands — shipping skins under those names/likenesses requires license agreements. Use original inspired-by themes (as above) unless licenses are obtained.
+Onboarding data is stored locally pre-signup and merged into the user/kid profile after registration.
+
 ### 2.2 Accounts & kids' profiles
 - Auth: phone number (OTP, primary for Mongolia), email/password, Google & Apple sign-in.
 - One parent account → up to 4 kids' profiles (name, avatar, birth year → derived age band).
