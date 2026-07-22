@@ -69,6 +69,38 @@
   .skincard .sw { width:24px; height:24px; border-radius:50%; border:3px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,.2); flex-shrink:0; }
   .genderrow { display:flex; gap:10px; margin-bottom:16px; }
   .genderrow .chip { flex:1; text-align:center; padding:12px; font-size:14px; margin:0; }
+  /* ✨ motion & animation layer */
+  .screen.active { animation: screenIn .38s cubic-bezier(.22,1,.36,1); }
+  @keyframes screenIn { from { opacity:0; transform:translateY(16px) scale(.985); } to { opacity:1; transform:none; } }
+  .btn { position:relative; overflow:hidden; transition:transform .16s ease; }
+  .btn:hover { transform:translateY(-2px) scale(1.015); }
+  .btn:active { transform:scale(.96); }
+  .btn::after { content:''; position:absolute; top:0; left:-70%; width:45%; height:100%;
+    background:linear-gradient(105deg,transparent,rgba(255,255,255,.5),transparent);
+    animation:shine 3.2s ease-in-out infinite; }
+  @keyframes shine { 0%{left:-70%} 55%{left:140%} 100%{left:140%} }
+  .bookcard, .avbtn, .agecard, .skincard, .langrow, .kidcard { transition:transform .18s ease, box-shadow .18s ease; }
+  .bookcard:hover, .avbtn:hover, .agecard:hover { transform:translateY(-4px) scale(1.05); box-shadow:0 10px 22px rgba(0,0,0,.16); }
+  .skincard:hover, .langrow:hover, .kidcard:hover { transform:translateX(4px) scale(1.01); }
+  .avbtn.sel { animation:pop .35s cubic-bezier(.34,1.56,.64,1); }
+  .agecard.sel { animation:pop .35s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes pop { 0%{transform:scale(.85)} 60%{transform:scale(1.12)} 100%{transform:scale(1)} }
+  .cover { transition:transform .25s ease; }
+  .bookcard:hover .cover { transform:rotate(-2deg); }
+  .stars { animation:twinkle 2.6s ease-in-out infinite; }
+  @keyframes twinkle { 0%,100%{opacity:1} 50%{opacity:.75} }
+  /* floating particles (theme magic dust, comic bolts, bubbles...) */
+  .fx { position:absolute; pointer-events:none; z-index:6; bottom:-40px; will-change:transform,opacity;
+    animation:floatUp linear forwards; filter:drop-shadow(0 0 6px rgba(255,255,255,.35)); }
+  @keyframes floatUp {
+    0% { transform:translateY(0) rotate(0deg) scale(.7); opacity:0; }
+    12% { opacity:1; }
+    100% { transform:translateY(-780px) rotate(50deg) scale(1.15); opacity:0; } }
+  .burst { position:absolute; pointer-events:none; z-index:7; animation:burst 1.4s ease-out forwards; }
+  @keyframes burst { 0%{transform:scale(.2);opacity:0} 25%{opacity:1} 100%{transform:scale(2.1);opacity:0} }
+  .h { animation:none; }
+  .obhero { animation:heroFloat 3.4s ease-in-out infinite; display:inline-block; }
+  @keyframes heroFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
 </style>
 </head>
 <body>
@@ -82,7 +114,7 @@
   <!-- ONBOARDING 1: LANGUAGE ONLY -->
   <div class="screen active" id="scr-ob-lang">
     <div style="text-align:center;margin:26px 0 16px">
-      <div style="font-size:56px">📚</div>
+      <div style="font-size:56px" class="obhero">📚</div>
       <div class="h">KidsBooks</div>
       <div class="sub">Хэлээ сонгоорой · Choose your language</div>
     </div>
@@ -439,18 +471,24 @@ function obAvatarNext(){
   go('ob-skin');
 }
 
-// App skins. NOTE: branded skins (Barbie/Spider-Man/Harry Potter) require
-// licensing — these are original "inspired-by" themes.
+// App skins. NOTE: branded skins (Disney/Marvel/Barbie/Harry Potter) require
+// license agreements — these are original "inspired-by" themes with the same
+// vibe. If licenses are obtained, only names/assets need swapping.
+// d = floating particle set, burst = occasional big effect.
 const SKINS = [
-  {k:'classic', n:'KidsBooks Classic', e:'📚', bg:'#FFF8EF', p:'#FF6B57', s:'#2EC4B6', ink:'#2D2A32'},
-  {k:'pink',    n:'Ягаан гүнж',        e:'👸', bg:'#FFE8F3', p:'#E91E8C', s:'#B457E0', ink:'#4A2040'},
-  {k:'hero',    n:'Аварга баатар',     e:'🕷️', bg:'#EAF1FF', p:'#D6323C', s:'#2B4FD8', ink:'#1D2A52'},
-  {k:'wizard',  n:'Шидтэний сургууль', e:'🪄', bg:'#312B4E', p:'#C9A227', s:'#7A5CC9', ink:'#F5EFD9'},
-  {k:'nature',  n:'Байгаль',           e:'🌿', bg:'#EFF7E9', p:'#3E8E41', s:'#7CB342', ink:'#24371F'},
-  {k:'ocean',   n:'Далай',             e:'🌊', bg:'#E6F4FA', p:'#0277BD', s:'#26C6DA', ink:'#0E3446'},
-  {k:'calm',    n:'Намуухан орчин',    e:'🕯️', bg:'#F6F1EA', p:'#A98467', s:'#B0A695', ink:'#3E362E'},
-  {k:'spooky',  n:'Аймшгийн орчин',    e:'🎃', bg:'#221E2C', p:'#FF7A1A', s:'#7CB518', ink:'#F3EDE2'},
-  {k:'palace',  n:'Үлгэрийн ордон',    e:'🏰', bg:'#F3ECFF', p:'#8E5BD6', s:'#E8B14E', ink:'#33254D'},
+  {k:'magic',   n:'Шидэт Ордон',       e:'🏰', ink:'#FFF6DC', p:'#FFC94D', s:'#FF6FB5',
+    bg:'linear-gradient(180deg,#141046 0%,#332180 48%,#7B2FBE 88%,#B44BD6 100%)',
+    d:['✨','⭐','🌟','🫧'], burst:'🎆'},
+  {k:'hero',    n:'Баатрын Ертөнц',    e:'🦸', ink:'#F8F5EF', p:'#E23636', s:'#518CCA',
+    bg:'radial-gradient(circle at 18% 24%, rgba(255,255,255,.07) 2px, transparent 2.5px) 0 0/22px 22px, linear-gradient(160deg,#101B4D 0%,#1E3A8A 55%,#7F1D1D 100%)',
+    d:['⚡','✴️','🌠'], burst:'💥'},
+  {k:'classic', n:'KidsBooks Classic', e:'📚', bg:'#FFF8EF', p:'#FF6B57', s:'#2EC4B6', ink:'#2D2A32', d:['⭐']},
+  {k:'pink',    n:'Ягаан гүнж',        e:'👸', bg:'linear-gradient(180deg,#FFE8F3,#FFD3EA)', p:'#E91E8C', s:'#B457E0', ink:'#4A2040', d:['💖','✨'], burst:'💝'},
+  {k:'wizard',  n:'Шидтэний сургууль', e:'🪄', bg:'linear-gradient(180deg,#241F3D,#3A2F63)', p:'#C9A227', s:'#7A5CC9', ink:'#F5EFD9', d:['✨','🪄','🌙'], burst:'🔮'},
+  {k:'nature',  n:'Байгаль',           e:'🌿', bg:'linear-gradient(180deg,#EFF7E9,#DDEED2)', p:'#3E8E41', s:'#7CB342', ink:'#24371F', d:['🍃','🦋']},
+  {k:'ocean',   n:'Далай',             e:'🌊', bg:'linear-gradient(180deg,#E6F4FA,#C8E9F6)', p:'#0277BD', s:'#26C6DA', ink:'#0E3446', d:['🫧','🐠','🐬']},
+  {k:'calm',    n:'Намуухан орчин',    e:'🕯️', bg:'#F6F1EA', p:'#A98467', s:'#B0A695', ink:'#3E362E', d:[]},
+  {k:'spooky',  n:'Аймшгийн орчин',    e:'🎃', bg:'linear-gradient(180deg,#17141F,#2B2337)', p:'#FF7A1A', s:'#7CB518', ink:'#F3EDE2', d:['🦇','👻','🕸️'], burst:'🎃'},
 ];
 const skinGrid=document.getElementById('skinGrid');
 SKINS.forEach(sk=>{
@@ -473,7 +511,42 @@ function applySkin(sk){
   ph.style.setProperty('--primary',sk.p);
   ph.style.setProperty('--secondary',sk.s);
   ph.style.setProperty('--ink',sk.ink);
+  startFx(sk);
 }
+
+// ---------- ✨ particle & burst engine ----------
+let fxTimers=[];
+function startFx(sk){
+  fxTimers.forEach(clearInterval); fxTimers=[];
+  document.querySelectorAll('.fx,.burst').forEach(el=>el.remove());
+  const ph=document.querySelector('.phone');
+  if(sk.d && sk.d.length){
+    fxTimers.push(setInterval(()=>{
+      if(document.querySelectorAll('.fx').length>14) return;
+      const s=document.createElement('span'); s.className='fx';
+      s.textContent=sk.d[Math.floor(Math.random()*sk.d.length)];
+      s.style.left=(6+Math.random()*84)+'%';
+      s.style.fontSize=(11+Math.random()*17)+'px';
+      s.style.animationDuration=(5+Math.random()*6)+'s';
+      s.style.animationDelay=(Math.random()*.8)+'s';
+      ph.appendChild(s);
+      s.addEventListener('animationend',()=>s.remove());
+    },650));
+  }
+  if(sk.burst){
+    fxTimers.push(setInterval(()=>{
+      const b=document.createElement('span'); b.className='burst';
+      b.textContent=sk.burst;
+      b.style.left=(12+Math.random()*66)+'%';
+      b.style.top=(8+Math.random()*38)+'%';
+      b.style.fontSize=(30+Math.random()*26)+'px';
+      ph.appendChild(b);
+      b.addEventListener('animationend',()=>b.remove());
+    },2600));
+  }
+}
+// gentle default sparkles from the very first screen
+startFx(SKINS.find(s=>s.k==='classic'));
 function setLang(code){
   cur=code;
   document.querySelectorAll('[data-i]').forEach(el=>{ const k=el.dataset.i; if(T[k]&&T[k][code]) el.textContent=T[k][code]; });
