@@ -3,9 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KidsBooks — UI/UX Mockup v4 🏰</title>
+<title>KidsBooks — UI/UX Mockup v5 🎬</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; font-family:'Nunito','Segoe UI',system-ui,sans-serif; }
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Fredoka','Baloo 2','Nunito','Segoe UI',system-ui,sans-serif; }
   body { background:#EDE7DC; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:24px; gap:16px; }
   h1.pagetitle { color:#2D2A32; font-size:20px; }
   .toolbar { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
@@ -32,6 +35,35 @@
     filter:drop-shadow(0 0 22px rgba(255,201,77,.65)); }
   .rowin { animation:rowIn .5s cubic-bezier(.22,1,.36,1) both; }
   @keyframes rowIn { from { opacity:0; transform:translateX(-20px); } to { opacity:1; transform:none; } }
+  /* ===== v5 cinematic layer ===== */
+  #fxcanvas { position:absolute; inset:0; z-index:1; pointer-events:none; }
+  .scene { position:absolute; left:0; right:0; bottom:0; height:260px; z-index:0; pointer-events:none; }
+  .scene svg { width:100%; height:100%; display:block; }
+  .sunburst { position:absolute; width:760px; height:760px; left:50%; top:24%;
+    transform:translate(-50%,-50%); z-index:0; pointer-events:none; opacity:0; transition:opacity .8s;
+    background:repeating-conic-gradient(rgba(255,255,255,.16) 0deg 7deg, transparent 7deg 16deg);
+    -webkit-mask-image:radial-gradient(circle, #000 0%, transparent 60%);
+    mask-image:radial-gradient(circle, #000 0%, transparent 60%);
+    animation:spinRays 48s linear infinite; }
+  @keyframes spinRays { to { transform:translate(-50%,-50%) rotate(360deg); } }
+  .screen { z-index:2; }
+  /* glass / theme-aware surfaces (dark themes get frosted glass) */
+  .card, .searchbar, .langrow, .skincard, .agecard, .avbtn, .back, .chip, .banklogos span {
+    background:var(--card,#fff); color:var(--ink,#2D2A32);
+    border:1px solid var(--card-brd,transparent);
+    backdrop-filter:blur(var(--blur,0px)); -webkit-backdrop-filter:blur(var(--blur,0px)); }
+  .chip.sel { background:var(--secondary,#2EC4B6); color:#fff; }
+  .sub { color:var(--muted,#8B8496); }
+  .bt { color:var(--ink,#2D2A32); }
+  .langrow, .skincard, .agecard { color:var(--ink,#2D2A32); }
+  .langrow.sel { outline-color:var(--secondary,#2EC4B6); }
+  .bottomnav { background:var(--nav,#fff); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); }
+  .bottomnav div { color:var(--navink,#9A93A5); }
+  .bottomnav div.on { color:var(--primary,#FF6B57); }
+  .btn { background:var(--btn,linear-gradient(135deg,#FF8A65,#FF6B57)); box-shadow:0 10px 28px var(--glow,rgba(255,107,87,.42)); }
+  .btn.ghost { background:var(--card,#fff); color:var(--ink,#2D2A32); box-shadow:none; border:1px solid var(--card-brd,transparent); }
+  .brand { font-family:'Baloo 2','Fredoka',sans-serif; font-size:42px; line-height:1.1; }
+  .tagline { color:var(--muted,#8B8496); font-weight:600; font-size:13px; letter-spacing:.4px; }
   /* bottom nav */
   .bottomnav { position:absolute; bottom:0; left:0; right:0; height:74px; background:#fff; display:flex; border-radius:28px 28px 0 0; box-shadow:0 -4px 20px rgba(0,0,0,.08); z-index:40; }
   .bottomnav div { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; font-size:10px; color:#9A93A5; font-weight:700; }
@@ -121,19 +153,21 @@
 </style>
 </head>
 <body>
-<h1 class="pagetitle">📚 KidsBooks — Mobile App UI Mockup <span style="opacity:.5;font-size:13px">v4 🏰 magic</span></h1>
+<h1 class="pagetitle">📚 KidsBooks — Mobile App UI Mockup <span style="opacity:.5;font-size:13px">v5 🎬 cinematic</span></h1>
 <div class="toolbar" id="screenBtns"></div>
 <div class="toolbar" id="langBtns"></div>
 
 <div class="phone">
   <div class="notch"></div>
+  <div class="sunburst" id="sunburst"></div>
+  <div class="scene" id="scene"></div>
+  <canvas id="fxcanvas"></canvas>
 
   <!-- ONBOARDING 1: LANGUAGE ONLY -->
   <div class="screen active" id="scr-ob-lang">
-    <div style="text-align:center;margin:22px 0 14px">
-      <div class="castle">🏰</div>
+    <div style="text-align:center;margin:30px 0 18px">
       <div class="brand">KidsBooks</div>
-      <div class="sub" style="color:#E8DFF7;font-weight:700;margin-top:4px">✨ Хэлээ сонгоорой · Choose your language ✨</div>
+      <div class="tagline" style="margin-top:6px">Хэлээ сонгоорой · Choose your language</div>
     </div>
     <div id="obLangList"></div>
   </div>
@@ -491,23 +525,67 @@ function obAvatarNext(){
 }
 
 // App skins. NOTE: branded skins (Disney/Marvel/Barbie/Harry Potter) require
-// license agreements — these are original "inspired-by" themes with the same
-// vibe. If licenses are obtained, only names/assets need swapping.
-// d = floating particle set, burst = occasional big effect.
+// license agreements — these are original "inspired-by" cinematic themes.
+// fx = canvas particle config, scene = SVG backdrop, sun = rotating rays opacity.
 const SKINS = [
-  {k:'magic',   n:'Шидэт Ордон',       e:'🏰', ink:'#FFF6DC', p:'#FFC94D', s:'#FF6FB5',
-    bg:'linear-gradient(180deg,#141046 0%,#332180 48%,#7B2FBE 88%,#B44BD6 100%)',
-    d:['✨','⭐','🌟','🫧'], burst:'🎆'},
-  {k:'hero',    n:'Баатрын Ертөнц',    e:'🦸', ink:'#F8F5EF', p:'#E23636', s:'#518CCA',
-    bg:'radial-gradient(circle at 18% 24%, rgba(255,255,255,.07) 2px, transparent 2.5px) 0 0/22px 22px, linear-gradient(160deg,#101B4D 0%,#1E3A8A 55%,#7F1D1D 100%)',
-    d:['⚡','✴️','🌠'], burst:'💥'},
-  {k:'classic', n:'KidsBooks Classic', e:'📚', bg:'#FFF8EF', p:'#FF6B57', s:'#2EC4B6', ink:'#2D2A32', d:['⭐']},
-  {k:'pink',    n:'Ягаан гүнж',        e:'👸', bg:'linear-gradient(180deg,#FFE8F3,#FFD3EA)', p:'#E91E8C', s:'#B457E0', ink:'#4A2040', d:['💖','✨'], burst:'💝'},
-  {k:'wizard',  n:'Шидтэний сургууль', e:'🪄', bg:'linear-gradient(180deg,#241F3D,#3A2F63)', p:'#C9A227', s:'#7A5CC9', ink:'#F5EFD9', d:['✨','🪄','🌙'], burst:'🔮'},
-  {k:'nature',  n:'Байгаль',           e:'🌿', bg:'linear-gradient(180deg,#EFF7E9,#DDEED2)', p:'#3E8E41', s:'#7CB342', ink:'#24371F', d:['🍃','🦋']},
-  {k:'ocean',   n:'Далай',             e:'🌊', bg:'linear-gradient(180deg,#E6F4FA,#C8E9F6)', p:'#0277BD', s:'#26C6DA', ink:'#0E3446', d:['🫧','🐠','🐬']},
-  {k:'calm',    n:'Намуухан орчин',    e:'🕯️', bg:'#F6F1EA', p:'#A98467', s:'#B0A695', ink:'#3E362E', d:[]},
-  {k:'spooky',  n:'Аймшгийн орчин',    e:'🎃', bg:'linear-gradient(180deg,#17141F,#2B2337)', p:'#FF7A1A', s:'#7CB518', ink:'#F3EDE2', d:['🦇','👻','🕸️'], burst:'🎃'},
+  {k:'magic', n:'Шидэт Ордон', e:'🏰',
+    bg:'linear-gradient(180deg,#0E0A38 0%,#251668 46%,#5B21A8 82%,#8B3DC6 100%)',
+    ink:'#FFF6DC', muted:'#C9BFF0', p:'#FFC94D', s:'#FF6FB5',
+    card:'rgba(255,255,255,.13)', brd:'rgba(255,255,255,.22)', blur:'14px',
+    nav:'rgba(18,12,58,.88)', navink:'#9A93C9',
+    btn:'linear-gradient(135deg,#FFC94D,#FF8FB8)', glow:'rgba(255,185,95,.5)',
+    fx:{stars:70, dust:{colors:['#FFD86B','#FFB3E0','#9BD7FF'],rate:13}, fireworks:true},
+    scene:'castle', sun:.14},
+  {k:'hero', n:'Баатрын Ертөнц', e:'🦸',
+    bg:'linear-gradient(165deg,#0A1238 0%,#16307E 52%,#5E1020 100%)',
+    ink:'#F8F5EF', muted:'#AFBBE4', p:'#FF4B4B', s:'#4F8FE0',
+    card:'rgba(255,255,255,.12)', brd:'rgba(255,255,255,.2)', blur:'12px',
+    nav:'rgba(9,14,48,.9)', navink:'#8FA0D8',
+    btn:'linear-gradient(135deg,#FF4B4B,#B01030)', glow:'rgba(226,54,54,.55)',
+    fx:{stars:24, dust:{colors:['#FF5F5F','#6FA8FF','#FFD86B'],rate:11}, rings:true},
+    scene:'skyline', sun:.5},
+  {k:'classic', n:'KidsBooks Classic', e:'📚',
+    bg:'#FFF8EF', ink:'#2D2A32', muted:'#8B8496', p:'#FF6B57', s:'#2EC4B6',
+    card:'#fff', brd:'transparent', blur:'0px', nav:'#fff', navink:'#9A93A5',
+    btn:'linear-gradient(135deg,#FF8A65,#FF6B57)', glow:'rgba(255,107,87,.4)',
+    fx:{dust:{colors:['#FFD59E','#FFE9C9'],rate:24}}, scene:'', sun:0},
+  {k:'pink', n:'Ягаан гүнж', e:'👸',
+    bg:'linear-gradient(180deg,#FFE8F3,#FFC9E5)', ink:'#4A2040', muted:'#A96C93',
+    p:'#E91E8C', s:'#B457E0', card:'rgba(255,255,255,.78)', brd:'rgba(255,255,255,.9)', blur:'8px',
+    nav:'rgba(255,255,255,.85)', navink:'#C79BB4',
+    btn:'linear-gradient(135deg,#FF6FB5,#E91E8C)', glow:'rgba(233,30,140,.4)',
+    fx:{dust:{colors:['#FF8FC8','#FFC1E0','#FFFFFF'],rate:11}}, scene:'', sun:.16},
+  {k:'wizard', n:'Шидтэний сургууль', e:'🪄',
+    bg:'linear-gradient(180deg,#1A1430 0%,#2E2354 60%,#4A3580 100%)',
+    ink:'#F5EFD9', muted:'#B7A9DC', p:'#E5B93C', s:'#8E6FE0',
+    card:'rgba(255,255,255,.1)', brd:'rgba(255,255,255,.18)', blur:'12px',
+    nav:'rgba(22,16,44,.9)', navink:'#8F82B8',
+    btn:'linear-gradient(135deg,#E5B93C,#B8860B)', glow:'rgba(229,185,60,.45)',
+    fx:{stars:60, dust:{colors:['#E9C46A','#B197FC'],rate:15}}, scene:'castle', sun:0},
+  {k:'nature', n:'Байгаль', e:'🌿',
+    bg:'linear-gradient(180deg,#EFF7E9,#CDE6BC)', ink:'#24371F', muted:'#7C9471',
+    p:'#3E8E41', s:'#7CB342', card:'rgba(255,255,255,.82)', brd:'rgba(255,255,255,.9)', blur:'6px',
+    nav:'rgba(255,255,255,.88)', navink:'#9DB394',
+    btn:'linear-gradient(135deg,#66BB6A,#3E8E41)', glow:'rgba(62,142,65,.35)',
+    fx:{dust:{colors:['#8BC34A','#C5E1A5','#FFF59D'],rate:15}}, scene:'', sun:0},
+  {k:'ocean', n:'Далай', e:'🌊',
+    bg:'linear-gradient(180deg,#DFF3FC 0%,#A9DFF5 60%,#7CCBEC 100%)', ink:'#0E3446', muted:'#5E8CA0',
+    p:'#0277BD', s:'#26C6DA', card:'rgba(255,255,255,.8)', brd:'rgba(255,255,255,.9)', blur:'6px',
+    nav:'rgba(255,255,255,.88)', navink:'#8FB4C4',
+    btn:'linear-gradient(135deg,#29B6F6,#0277BD)', glow:'rgba(2,119,189,.35)',
+    fx:{dust:{colors:['#FFFFFF','#C9F0FF','#9FE8E4'],rate:10}}, scene:'', sun:0},
+  {k:'calm', n:'Намуухан орчин', e:'🕯️',
+    bg:'#F6F1EA', ink:'#3E362E', muted:'#A99C8C', p:'#A98467', s:'#B0A695',
+    card:'#fff', brd:'transparent', blur:'0px', nav:'#fff', navink:'#B8AC9C',
+    btn:'linear-gradient(135deg,#C4A088,#A98467)', glow:'rgba(169,132,103,.3)',
+    fx:{dust:{colors:['#E8DCC8'],rate:30}}, scene:'', sun:0},
+  {k:'spooky', n:'Аймшгийн орчин', e:'🎃',
+    bg:'linear-gradient(180deg,#100D18 0%,#241C33 70%,#3A2A45 100%)',
+    ink:'#F3EDE2', muted:'#A396B8', p:'#FF7A1A', s:'#96C93D',
+    card:'rgba(255,255,255,.09)', brd:'rgba(255,255,255,.16)', blur:'10px',
+    nav:'rgba(14,11,22,.92)', navink:'#7E7396',
+    btn:'linear-gradient(135deg,#FF9640,#E85D04)', glow:'rgba(255,122,26,.45)',
+    fx:{stars:24, dust:{colors:['#FF8C42','#B5E48C'],rate:17}}, scene:'', sun:0},
 ];
 const skinGrid=document.getElementById('skinGrid');
 SKINS.forEach(sk=>{
@@ -523,49 +601,133 @@ SKINS.forEach(sk=>{
   };
   skinGrid.appendChild(d);
 });
+// ---------- SVG scenes ----------
+const SCENES = {
+  castle: `<svg viewBox="0 0 390 250" preserveAspectRatio="xMidYMax slice">
+    <defs>
+      <radialGradient id="moonG"><stop offset="0%" stop-color="#FFF6D8" stop-opacity=".95"/><stop offset="55%" stop-color="#FFF0B8" stop-opacity=".22"/><stop offset="100%" stop-color="#FFF0B8" stop-opacity="0"/></radialGradient>
+      <linearGradient id="hillG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2A1E72"/><stop offset="100%" stop-color="#170F52"/></linearGradient>
+    </defs>
+    <circle cx="318" cy="54" r="58" fill="url(#moonG)"/>
+    <circle cx="318" cy="54" r="21" fill="#FFF3C9"/>
+    <path d="M0 208 Q90 166 180 200 T390 190 L390 250 0 250 Z" fill="url(#hillG)" opacity=".9"/>
+    <g fill="#130C4A">
+      <rect x="148" y="128" width="94" height="122" rx="3"/>
+      <rect x="126" y="96" width="26" height="154"/><polygon points="123,98 165,98 139,54"/>
+      <rect x="238" y="96" width="26" height="154"/><polygon points="225,98 267,98 251,54"/>
+      <rect x="181" y="74" width="28" height="176"/><polygon points="177,76 213,76 195,24"/>
+      <rect x="148" y="120" width="10" height="10"/><rect x="166" y="120" width="10" height="10"/>
+      <rect x="184" y="120" width="10" height="10"/><rect x="202" y="120" width="10" height="10"/>
+      <rect x="220" y="120" width="10" height="10"/>
+    </g>
+    <g fill="#FFC94D">
+      <rect x="135" y="118" width="6" height="9" rx="2" opacity=".95"/>
+      <rect x="247" y="118" width="6" height="9" rx="2" opacity=".8"/>
+      <rect x="191" y="98" width="8" height="11" rx="3"/>
+      <rect x="163" y="158" width="7" height="10" rx="2" opacity=".85"/>
+      <rect x="214" y="172" width="7" height="10" rx="2" opacity=".7"/>
+      <rect x="188" y="196" width="14" height="22" rx="7" opacity=".9"/>
+    </g>
+    <g fill="#FF6FB5">
+      <polygon points="195,24 195,10 211,17"/><polygon points="139,54 139,42 152,48"/><polygon points="251,54 251,42 264,48"/>
+    </g>
+  </svg>`,
+  skyline: `<svg viewBox="0 0 390 230" preserveAspectRatio="xMidYMax slice">
+    <defs><radialGradient id="cityG"><stop offset="0%" stop-color="#FF4B4B" stop-opacity=".34"/><stop offset="100%" stop-color="#FF4B4B" stop-opacity="0"/></radialGradient></defs>
+    <ellipse cx="195" cy="235" rx="250" ry="100" fill="url(#cityG)"/>
+    <g fill="#080E30">
+      <rect x="8" y="128" width="48" height="102"/><rect x="62" y="94" width="42" height="136"/>
+      <rect x="110" y="138" width="36" height="92"/><rect x="150" y="72" width="50" height="158"/>
+      <rect x="206" y="116" width="38" height="114"/><rect x="250" y="88" width="46" height="142"/>
+      <rect x="302" y="130" width="40" height="100"/><rect x="346" y="104" width="36" height="126"/>
+      <polygon points="150,72 175,46 200,72"/><rect x="171" y="34" width="6" height="20"/>
+    </g>
+    <g fill="#FFD86B" opacity=".9">
+      <rect x="70" y="106" width="6" height="8"/><rect x="84" y="106" width="6" height="8"/><rect x="70" y="122" width="6" height="8"/>
+      <rect x="160" y="88" width="7" height="9"/><rect x="176" y="88" width="7" height="9"/><rect x="160" y="106" width="7" height="9"/><rect x="176" y="124" width="7" height="9"/>
+      <rect x="258" y="100" width="6" height="8"/><rect x="272" y="100" width="6" height="8"/><rect x="258" y="118" width="6" height="8"/>
+      <rect x="214" y="128" width="6" height="8"/><rect x="354" y="116" width="6" height="8"/><rect x="316" y="142" width="6" height="8"/>
+    </g>
+  </svg>`
+};
+
 function applySkin(sk){
   ob.skin=sk.k;
   const ph=document.querySelector('.phone');
-  ph.style.setProperty('--bg',sk.bg);
-  ph.style.setProperty('--primary',sk.p);
-  ph.style.setProperty('--secondary',sk.s);
-  ph.style.setProperty('--ink',sk.ink);
+  const set=(k,v)=>ph.style.setProperty(k,v);
+  set('--bg',sk.bg); set('--primary',sk.p); set('--secondary',sk.s); set('--ink',sk.ink);
+  set('--muted',sk.muted); set('--card',sk.card); set('--card-brd',sk.brd); set('--blur',sk.blur);
+  set('--nav',sk.nav); set('--navink',sk.navink); set('--btn',sk.btn); set('--glow',sk.glow);
+  document.getElementById('scene').innerHTML = SCENES[sk.scene] || '';
+  document.getElementById('sunburst').style.opacity = sk.sun || 0;
   startFx(sk);
 }
 
-// ---------- ✨ particle & burst engine ----------
-let fxTimers=[];
+// ---------- 🎆 cinematic canvas FX engine (real particles, no emoji) ----------
+const cv=document.getElementById('fxcanvas'), ctx=cv.getContext('2d');
+function sizeCanvas(){ const ph=document.querySelector('.phone'); cv.width=ph.clientWidth; cv.height=ph.clientHeight; }
+sizeCanvas(); window.addEventListener('resize',sizeCanvas);
+let FX={stars:[],dust:[],fw:[],rings:[],cfg:null,t:0};
 function startFx(sk){
-  fxTimers.forEach(clearInterval); fxTimers=[];
-  document.querySelectorAll('.fx,.burst').forEach(el=>el.remove());
-  const ph=document.querySelector('.phone');
-  if(sk.d && sk.d.length){
-    fxTimers.push(setInterval(()=>{
-      if(document.querySelectorAll('.fx').length>14) return;
-      const s=document.createElement('span'); s.className='fx';
-      s.textContent=sk.d[Math.floor(Math.random()*sk.d.length)];
-      s.style.left=(6+Math.random()*84)+'%';
-      s.style.fontSize=(11+Math.random()*17)+'px';
-      s.style.animationDuration=(5+Math.random()*6)+'s';
-      s.style.animationDelay=(Math.random()*.8)+'s';
-      ph.appendChild(s);
-      s.addEventListener('animationend',()=>s.remove());
-    },650));
-  }
-  if(sk.burst){
-    fxTimers.push(setInterval(()=>{
-      const b=document.createElement('span'); b.className='burst';
-      b.textContent=sk.burst;
-      b.style.left=(12+Math.random()*66)+'%';
-      b.style.top=(8+Math.random()*38)+'%';
-      b.style.fontSize=(30+Math.random()*26)+'px';
-      ph.appendChild(b);
-      b.addEventListener('animationend',()=>b.remove());
-    },2600));
+  FX={stars:[],dust:[],fw:[],rings:[],cfg:sk.fx||null,t:0};
+  if(sk.fx && sk.fx.stars){
+    for(let i=0;i<sk.fx.stars;i++)
+      FX.stars.push({x:Math.random()*cv.width, y:Math.random()*cv.height*.72,
+        r:.5+Math.random()*1.7, p:Math.random()*6.28});
   }
 }
-// The app OPENS in the Magic Castle theme — night sky, stars and fireworks
-// from the very first screen. (Skin screen lets kids change it.)
+function spawnDust(cfg){
+  FX.dust.push({x:Math.random()*cv.width, y:cv.height+8,
+    vy:-(.25+Math.random()*.55), vx:(Math.random()-.5)*.3,
+    r:1.4+Math.random()*3.2, c:cfg.colors[Math.floor(Math.random()*cfg.colors.length)],
+    a:0, max:.45+Math.random()*.45, up:true});
+}
+function spawnFirework(){
+  const x=50+Math.random()*(cv.width-100), y=70+Math.random()*cv.height*.32;
+  const hue=Math.floor(Math.random()*360), n=76;
+  for(let i=0;i<n;i++){
+    const a=6.28*i/n+Math.random()*.12, sp=1.1+Math.random()*2.7;
+    FX.fw.push({x,y,px:x,py:y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,hue:hue+Math.random()*40});
+  }
+}
+function spawnRing(){
+  FX.rings.push({x:cv.width*(.2+Math.random()*.6), y:cv.height*(.14+Math.random()*.4),
+    r:6, life:1, hue:Math.random()<.5?358:222});
+}
+function tick(){
+  FX.t++; ctx.clearRect(0,0,cv.width,cv.height);
+  const cfg=FX.cfg;
+  if(cfg){
+    FX.stars.forEach(s=>{ const tw=.5+.5*Math.sin(FX.t*.03+s.p);
+      ctx.globalAlpha=.3+.6*tw; ctx.fillStyle='#FFF6DC';
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,6.28); ctx.fill(); });
+    if(cfg.dust && FX.t%cfg.dust.rate===0 && FX.dust.length<70) spawnDust(cfg.dust);
+    if(cfg.fireworks && FX.t%175===0) spawnFirework();
+    if(cfg.rings && FX.t%155===0) spawnRing();
+  }
+  FX.dust=FX.dust.filter(d=>d.y>-16 && d.a>-.01);
+  FX.dust.forEach(d=>{ d.x+=d.vx; d.y+=d.vy; d.a+=d.up?.02:-.004; if(d.a>=d.max) d.up=false;
+    ctx.globalAlpha=Math.max(0,Math.min(1,d.a)); ctx.fillStyle=d.c;
+    ctx.shadowColor=d.c; ctx.shadowBlur=9;
+    ctx.beginPath(); ctx.arc(d.x,d.y,d.r,0,6.28); ctx.fill(); ctx.shadowBlur=0; });
+  FX.fw=FX.fw.filter(p=>p.life>0);
+  FX.fw.forEach(p=>{ p.px=p.x; p.py=p.y; p.x+=p.vx; p.y+=p.vy;
+    p.vy+=.028; p.vx*=.985; p.vy*=.985; p.life-=.012;
+    ctx.globalAlpha=Math.max(p.life,0); ctx.lineWidth=1.6;
+    ctx.strokeStyle=`hsl(${p.hue} 100% ${55+30*p.life}%)`;
+    ctx.beginPath(); ctx.moveTo(p.px,p.py); ctx.lineTo(p.x,p.y); ctx.stroke(); });
+  FX.rings=FX.rings.filter(r=>r.life>0);
+  FX.rings.forEach(r=>{ r.r+=2.7; r.life-=.02;
+    ctx.globalAlpha=r.life*.85; ctx.lineWidth=3+6*r.life;
+    ctx.strokeStyle=`hsl(${r.hue} 85% 60%)`;
+    ctx.beginPath(); ctx.arc(r.x,r.y,r.r,0,6.28); ctx.stroke(); });
+  ctx.globalAlpha=1;
+  requestAnimationFrame(tick);
+}
+tick();
+
+// The app OPENS in the Magic Castle theme — real night sky, glowing castle,
+// physics fireworks — from the very first screen.
 applySkin(SKINS.find(s=>s.k==='magic'));
 function setLang(code){
   cur=code;
