@@ -298,10 +298,7 @@
       <div class="prog grow" style="margin:0"><div class="bar"><i style="width:40%"></i></div><b>2/5</b></div></div>
     <div class="h" data-i="obAgeTitle">Таны нас</div>
     <div class="sub" style="margin-bottom:14px" data-i="obAgeSub">Насанд тохирсон ном санал болгоно</div>
-    <div class="opt" data-age="3-5"><span class="ic" style="background:#DFF3E2">🦖</span><b style="font-size:17px">3–5</b><span class="tick">✓</span></div>
-    <div class="opt" data-age="6-8"><span class="ic" style="background:#EDE7FD">🐙</span><b style="font-size:17px">6–8</b><span class="tick">✓</span></div>
-    <div class="opt" data-age="9-12"><span class="ic" style="background:#FFF1D6">🦊</span><b style="font-size:17px">9–12</b><span class="tick">✓</span></div>
-    <div class="opt" data-age="13+"><span class="ic" style="background:#E3F0FF">🚀</span><b style="font-size:17px">13+</b><span class="tick">✓</span></div>
+    <div class="wheelwrap"><div class="wglass"></div><div class="wheel" id="ageWheel"></div></div>
     <button class="btn" onclick="go('ob-gender')" data-i="continueBtn">Үргэлжлүүлэх</button>
   </div>
 
@@ -734,8 +731,27 @@ obLangList.addEventListener('scroll',()=>{
   wraf=requestAnimationFrame(()=>{ wraf=null; wheelUpdate(); });
 });
 wheelUpdate();
-document.querySelectorAll('#scr-ob-age .opt').forEach(c=>{ c.onclick=()=>{ ob.age=c.dataset.age;
-  document.querySelectorAll('#scr-ob-age .opt').forEach(x=>x.classList.toggle('sel',x===c)); };});
+// glass scroll-wheel age picker
+const AGES=[['3-5','🦖  3–5'],['6-8','🐙  6–8'],['9-12','🦊  9–12'],['13+','🚀  13+']];
+const ageWheel=document.getElementById('ageWheel');
+AGES.forEach(([v,label],i)=>{
+  const d=document.createElement('div');
+  d.className='witem'; d.textContent=label;
+  d.onclick=()=>ageWheel.scrollTo({top:i*ITEM_H,behavior:'smooth'});
+  ageWheel.appendChild(d);
+});
+let araf=null;
+function ageWheelUpdate(){
+  const i=Math.max(0,Math.min(AGES.length-1,Math.round(ageWheel.scrollTop/ITEM_H)));
+  ageWheel.querySelectorAll('.witem').forEach((el,j)=>el.classList.toggle('on',j===i));
+  ob.age=AGES[i][0];
+}
+ageWheel.addEventListener('scroll',()=>{
+  if(araf) return;
+  araf=requestAnimationFrame(()=>{ araf=null; ageWheelUpdate(); });
+});
+ageWheel.scrollTop=ITEM_H; // default 6–8
+ageWheelUpdate();
 document.querySelectorAll('#scr-ob-gender .opt').forEach(c=>{ c.onclick=()=>{ ob.gender=c.dataset.g;
   document.querySelectorAll('#scr-ob-gender .opt').forEach(x=>x.classList.toggle('sel',x===c)); };});
 
@@ -857,7 +873,6 @@ hb.style.background=`linear-gradient(100deg, rgba(24,16,74,.9) 36%, rgba(24,16,7
 const ha=hb.querySelector('.art'); if(ha) ha.style.display='none';
 
 applySkin(SKINS[0]);
-document.querySelector('#scr-ob-age .opt[data-age="6-8"]').classList.add('sel');
 </script>
 </body>
 </html>
