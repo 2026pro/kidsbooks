@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>МИНИЙ НАЙЗ — UI v8</title>
+<title>МИНИЙ НАЙЗ — UI v9</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
@@ -36,8 +36,8 @@
     box-shadow:0 8px 22px var(--glow,rgba(108,79,224,.35));
     transition:transform .15s ease; position:relative; overflow:hidden; }
   .btn:hover { transform:translateY(-1px); } .btn:active { transform:scale(.97); }
-  .btn.line { background:var(--card,#fff); color:var(--primary,#6C4FE0);
-    border:2px solid var(--primary,#6C4FE0); box-shadow:none; }
+  .btn.line { background:var(--chip,#EDE7FD); color:var(--primary,#6C4FE0);
+    border:none; box-shadow:none; }
   .topbar { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
   .back { background:var(--card,#fff); border:1px solid var(--brd,transparent); border-radius:12px; width:36px; height:36px;
     font-size:15px; cursor:pointer; box-shadow:0 2px 6px rgba(43,35,80,.08); color:var(--ink,#2B2350); flex-shrink:0; }
@@ -53,11 +53,27 @@
   /* rows / list options */
   .opt { display:flex; align-items:center; gap:12px; background:var(--card,#fff); border-radius:16px;
     padding:13px 15px; margin-bottom:10px; cursor:pointer; font-weight:800; color:var(--ink,#2B2350);
-    box-shadow:0 2px 8px rgba(43,35,80,.06); border:2px solid var(--brd,transparent);
-    transition:transform .16s ease, border-color .16s, box-shadow .16s;
+    box-shadow:0 2px 8px rgba(43,35,80,.06); border:none;
+    transition:transform .16s ease, box-shadow .16s;
     backdrop-filter:blur(var(--blur,0px)); -webkit-backdrop-filter:blur(var(--blur,0px)); }
   .opt:hover { transform:translateY(-2px); box-shadow:0 8px 18px rgba(43,35,80,.12); }
-  .opt.sel { border-color:var(--primary,#6C4FE0); }
+  .opt.sel { box-shadow:0 10px 24px var(--glow,rgba(108,79,224,.3)); }
+  /* glass scroll wheel (language picker) */
+  .wheelwrap { position:relative; margin-bottom:12px; }
+  .wheel { height:280px; overflow-y:auto; scroll-snap-type:y mandatory; padding:112px 0; scrollbar-width:none;
+    -webkit-mask-image:linear-gradient(180deg,transparent,#000 22%,#000 78%,transparent);
+    mask-image:linear-gradient(180deg,transparent,#000 22%,#000 78%,transparent); }
+  .wheel::-webkit-scrollbar { display:none; }
+  .witem { height:56px; display:flex; align-items:center; justify-content:center; font-size:17px;
+    font-weight:800; color:var(--muted,#8E86A8); scroll-snap-align:center; cursor:pointer;
+    transition:transform .22s ease, color .22s, opacity .22s; opacity:.5; }
+  .witem.on { color:var(--ink,#2B2350); transform:scale(1.24); opacity:1; }
+  .wglass { position:absolute; left:10px; right:10px; top:50%; height:56px; transform:translateY(-50%);
+    border-radius:16px; z-index:2; pointer-events:none;
+    background:linear-gradient(120deg,rgba(255,255,255,.55),rgba(255,255,255,.22));
+    box-shadow:0 8px 24px var(--glow,rgba(108,79,224,.18)), inset 0 1px 0 rgba(255,255,255,.85),
+      inset 0 -1px 0 rgba(255,255,255,.35);
+    backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
   .opt .tick { margin-left:auto; width:22px; height:22px; border-radius:50%; border:2px solid #D9D2EE;
     display:flex; align-items:center; justify-content:center; font-size:12px; color:#fff; flex-shrink:0; }
   .opt.sel .tick { background:var(--primary,#6C4FE0); border-color:var(--primary,#6C4FE0); }
@@ -82,10 +98,10 @@
   /* skin poster cards */
   .skingrid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:14px; }
   .poster { height:104px; border-radius:16px; cursor:pointer; position:relative; overflow:hidden;
-    display:flex; align-items:flex-end; padding:8px; border:3px solid transparent;
-    box-shadow:0 4px 12px rgba(43,35,80,.15); transition:transform .16s; }
+    display:flex; align-items:flex-end; padding:8px; border:none;
+    box-shadow:0 4px 12px rgba(43,35,80,.15); transition:transform .16s, box-shadow .16s; }
   .poster:hover { transform:translateY(-3px) scale(1.03); }
-  .poster.sel { border-color:#fff; outline:3px solid var(--primary,#6C4FE0); }
+  .poster.sel { transform:scale(1.05); box-shadow:0 12px 26px var(--glow,rgba(108,79,224,.45)); }
   .poster b { color:#fff; font-size:11px; text-shadow:0 1px 4px rgba(0,0,0,.5); z-index:2; }
   .poster .art { position:absolute; top:6px; right:8px; font-size:26px; filter:drop-shadow(0 2px 4px rgba(0,0,0,.3)); }
   .poster.sel::after { content:'✓'; position:absolute; top:6px; left:6px; width:20px; height:20px;
@@ -137,9 +153,9 @@
   .badge { font-size:11px; font-weight:800; padding:4px 10px; border-radius:12px; background:var(--chip,#EDE7FD); color:var(--primary,#6C4FE0); }
   .fmt3 { display:flex; gap:8px; margin-bottom:12px; }
   .fmt { flex:1; text-align:center; background:var(--card,#fff); border-radius:14px; padding:10px 4px;
-    border:2px solid var(--brd,transparent); cursor:pointer; box-shadow:0 2px 8px rgba(43,35,80,.06); transition:transform .15s; }
+    border:none; cursor:pointer; box-shadow:0 2px 8px rgba(43,35,80,.06); transition:transform .15s, box-shadow .15s; }
   .fmt:hover { transform:translateY(-2px); }
-  .fmt.sel { border-color:var(--primary,#6C4FE0); }
+  .fmt.sel { background:var(--chip,#EDE7FD); box-shadow:0 8px 18px var(--glow,rgba(108,79,224,.3)); }
   .fmt .fi { font-size:19px; } .fmt b { font-size:11.5px; display:block; color:var(--ink,#2B2350); }
   .fmt .fp { font-size:12px; font-weight:900; color:var(--primary,#6C4FE0); }
   .two { display:flex; gap:10px; }
@@ -159,8 +175,8 @@
   .cline { display:flex; justify-content:space-between; padding:3px 0; font-size:13.5px; }
   .cline b.tot { color:var(--primary,#6C4FE0); font-size:16px; }
   .coupon { display:flex; gap:8px; }
-  .coupon input { flex:1; border:2px dashed #D9D2EE; border-radius:12px; padding:10px 12px; font-weight:700;
-    font-size:13px; background:transparent; color:var(--ink,#2B2350); outline:none; }
+  .coupon input { flex:1; border:none; border-radius:12px; padding:10px 12px; font-weight:700;
+    font-size:13px; background:var(--chip,#EDE7FD); color:var(--ink,#2B2350); outline:none; }
   .coupon button { border:none; background:var(--chip,#EDE7FD); color:var(--primary,#6C4FE0); font-weight:900;
     border-radius:12px; padding:0 16px; cursor:pointer; }
 
@@ -237,10 +253,11 @@
   .bottomnav svg { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
   .avgrid2 { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:12px 0 14px; }
   .avi { text-align:center; cursor:pointer; }
-  .avi img { width:70px; height:70px; border-radius:50%; object-fit:cover; border:3px solid transparent;
-    box-shadow:0 4px 10px rgba(43,35,80,.18); transition:transform .15s; }
+  .avi img { width:70px; height:70px; border-radius:50%; object-fit:cover; border:none;
+    box-shadow:0 4px 10px rgba(43,35,80,.18); transition:transform .15s, box-shadow .15s; }
   .avi:hover img { transform:scale(1.1); }
-  .avi.sel img { border-color:var(--primary,#6C4FE0); box-shadow:0 6px 16px var(--glow,rgba(108,79,224,.4)); }
+  .avi.sel img { transform:scale(1.12); box-shadow:0 8px 20px var(--glow,rgba(108,79,224,.5)); }
+  .avi.sel span { color:var(--primary,#6C4FE0); }
   .avi span { display:block; font-size:9.5px; font-weight:800; color:var(--muted,#8E86A8); margin-top:4px; line-height:1.15; }
   .note { text-align:center; font-size:11px; color:var(--muted,#B7AFC2); margin-top:8px; }
   .brandmini { display:flex; align-items:center; gap:8px; justify-content:center; margin-bottom:4px; }
@@ -254,7 +271,7 @@
 </style>
 </head>
 <body>
-<h1 class="pagetitle">📖 МИНИЙ НАЙЗ — UI/UX v8 🎨</h1>
+<h1 class="pagetitle">📖 МИНИЙ НАЙЗ — UI/UX v9 ✨</h1>
 <div class="toolbar" id="screenBtns"></div>
 <div class="toolbar" id="langBtns"></div>
 
@@ -270,7 +287,7 @@
     <div class="prog"><div class="bar"><i style="width:20%"></i></div><b>1/5</b></div>
     <div class="h" data-i="chooseLang">Хэлээ сонгоно уу</div>
     <div class="sub" style="margin-bottom:14px" data-i="chooseLangSub">Та дараа нь тохиргооноос солих боломжтой</div>
-    <div id="obLangList"></div>
+    <div class="wheelwrap"><div class="wglass"></div><div class="wheel" id="obLangList"></div></div>
     <button class="btn" onclick="go('ob-age')" data-i="continueBtn">Үргэлжлүүлэх</button>
   </div>
 
@@ -690,20 +707,32 @@ function setLang(code){ cur=code;
   document.querySelectorAll('[data-i]').forEach(el=>{ const k=el.dataset.i; if(T[k]&&T[k][code]) el.textContent=T[k][code]; });
   document.querySelectorAll('[data-ph]').forEach(el=>{ const k=el.dataset.ph; if(T[k]&&T[k][code]) el.placeholder=T[k][code]; });
   lb.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.lang===code));
-  document.querySelectorAll('#obLangList .opt').forEach(r=>r.classList.toggle('sel',r.dataset.lang===code));
+  document.querySelectorAll('#obLangList .witem').forEach(r=>r.classList.toggle('on',r.dataset.lang===code));
 }
 
 /* ---------- onboarding ---------- */
 const ob={age:'6-8',gender:null,avatar:'🦊',skin:'colorful'};
+// glass scroll-wheel language picker
 const obLangList=document.getElementById('obLangList');
-Object.entries(langs).forEach(([code,label],i)=>{
+const langCodes=Object.keys(langs);
+const ITEM_H=56;
+langCodes.forEach(code=>{
   const d=document.createElement('div');
-  d.className='opt rowin'+(code===cur?' sel':''); d.dataset.lang=code;
-  d.style.animationDelay=(i*60)+'ms';
-  d.innerHTML=`<b>${label}</b><span class="tick">✓</span>`;
-  d.onclick=()=>setLang(code);
+  d.className='witem'; d.dataset.lang=code; d.textContent=langs[code];
+  d.onclick=()=>obLangList.scrollTo({top:langCodes.indexOf(code)*ITEM_H,behavior:'smooth'});
   obLangList.appendChild(d);
 });
+let wraf=null;
+function wheelUpdate(){
+  const i=Math.max(0,Math.min(langCodes.length-1,Math.round(obLangList.scrollTop/ITEM_H)));
+  obLangList.querySelectorAll('.witem').forEach((el,j)=>el.classList.toggle('on',j===i));
+  if(langCodes[i]!==cur) setLang(langCodes[i]);
+}
+obLangList.addEventListener('scroll',()=>{
+  if(wraf) return;
+  wraf=requestAnimationFrame(()=>{ wraf=null; wheelUpdate(); });
+});
+wheelUpdate();
 document.querySelectorAll('#scr-ob-age .opt').forEach(c=>{ c.onclick=()=>{ ob.age=c.dataset.age;
   document.querySelectorAll('#scr-ob-age .opt').forEach(x=>x.classList.toggle('sel',x===c)); };});
 document.querySelectorAll('#scr-ob-gender .opt').forEach(c=>{ c.onclick=()=>{ ob.gender=c.dataset.g;
