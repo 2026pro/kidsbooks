@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KidsBooks — UI/UX Mockup v3 ✨</title>
+<title>KidsBooks — UI/UX Mockup v4 🏰</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; font-family:'Nunito','Segoe UI',system-ui,sans-serif; }
   body { background:#EDE7DC; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:24px; gap:16px; }
@@ -13,8 +13,25 @@
   .toolbar button.active { background:#FF6B57; color:#fff; }
   .phone { width:390px; height:800px; background:var(--bg,#FFF8EF); border-radius:44px; box-shadow:0 20px 60px rgba(0,0,0,.25); overflow:hidden; position:relative; border:10px solid #2D2A32; }
   .notch { position:absolute; top:0; left:50%; transform:translateX(-50%); width:140px; height:26px; background:#2D2A32; border-radius:0 0 16px 16px; z-index:50; }
-  .screen { display:none; height:100%; overflow-y:auto; padding:44px 18px 92px; }
+  .screen { display:none; height:100%; overflow-y:auto; padding:44px 18px 92px; position:relative; z-index:1; }
   .screen.active { display:block; }
+  /* living aurora glow behind every screen */
+  .phone::before { content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(60% 40% at 20% 15%, rgba(255,111,181,.28), transparent 60%),
+      radial-gradient(50% 35% at 82% 24%, rgba(81,140,202,.30), transparent 65%),
+      radial-gradient(70% 45% at 50% 88%, rgba(255,201,77,.18), transparent 60%);
+    animation:aurora 8s ease-in-out infinite alternate; }
+  @keyframes aurora { 0%{transform:translateY(0) scale(1);opacity:.75} 100%{transform:translateY(-26px) scale(1.14);opacity:1} }
+  .brand { font-size:36px; font-weight:900; letter-spacing:.5px;
+    background:linear-gradient(90deg,#FFC94D,#FF6FB5,#7BD3FF,#FFC94D); background-size:300% 100%;
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation:shimmerText 4s linear infinite; }
+  @keyframes shimmerText { to { background-position:300% 0; } }
+  .castle { font-size:72px; display:inline-block; animation:heroFloat 3.4s ease-in-out infinite;
+    filter:drop-shadow(0 0 22px rgba(255,201,77,.65)); }
+  .rowin { animation:rowIn .5s cubic-bezier(.22,1,.36,1) both; }
+  @keyframes rowIn { from { opacity:0; transform:translateX(-20px); } to { opacity:1; transform:none; } }
   /* bottom nav */
   .bottomnav { position:absolute; bottom:0; left:0; right:0; height:74px; background:#fff; display:flex; border-radius:28px 28px 0 0; box-shadow:0 -4px 20px rgba(0,0,0,.08); z-index:40; }
   .bottomnav div { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; font-size:10px; color:#9A93A5; font-weight:700; }
@@ -104,7 +121,7 @@
 </style>
 </head>
 <body>
-<h1 class="pagetitle">📚 KidsBooks — Mobile App UI Mockup <span style="opacity:.5;font-size:13px">v3 ✨ animated</span></h1>
+<h1 class="pagetitle">📚 KidsBooks — Mobile App UI Mockup <span style="opacity:.5;font-size:13px">v4 🏰 magic</span></h1>
 <div class="toolbar" id="screenBtns"></div>
 <div class="toolbar" id="langBtns"></div>
 
@@ -113,10 +130,10 @@
 
   <!-- ONBOARDING 1: LANGUAGE ONLY -->
   <div class="screen active" id="scr-ob-lang">
-    <div style="text-align:center;margin:26px 0 16px">
-      <div style="font-size:56px" class="obhero">📚</div>
-      <div class="h">KidsBooks</div>
-      <div class="sub">Хэлээ сонгоорой · Choose your language</div>
+    <div style="text-align:center;margin:22px 0 14px">
+      <div class="castle">🏰</div>
+      <div class="brand">KidsBooks</div>
+      <div class="sub" style="color:#E8DFF7;font-weight:700;margin-top:4px">✨ Хэлээ сонгоорой · Choose your language ✨</div>
     </div>
     <div id="obLangList"></div>
   </div>
@@ -421,7 +438,7 @@ function go(id){
 }
 
 // ---------- Onboarding: language → age+gender → avatar → skin ----------
-const ob = { age:null, gender:null, avatar:null, skin:'classic' };
+const ob = { age:null, gender:null, avatar:null, skin:'magic' };
 
 const obLangList = document.getElementById('obLangList');
 Object.entries(langs).forEach(([code,label])=>{
@@ -429,6 +446,8 @@ Object.entries(langs).forEach(([code,label])=>{
   d.className='langrow'+(code===cur?' sel':'');
   d.style.padding='16px'; d.style.fontSize='16px';
   d.innerHTML=`<span>${label}</span><span>${code===cur?'✅':''}</span>`;
+  d.classList.add('rowin');
+  d.style.animationDelay=(obLangList.children.length*70)+'ms';
   d.onclick=()=>{ setLang(code);
     obLangList.querySelectorAll('.langrow').forEach(r=>{r.classList.remove('sel');r.querySelector('span:last-child').textContent='';});
     d.classList.add('sel'); d.querySelector('span:last-child').textContent='✅';
@@ -545,8 +564,9 @@ function startFx(sk){
     },2600));
   }
 }
-// gentle default sparkles from the very first screen
-startFx(SKINS.find(s=>s.k==='classic'));
+// The app OPENS in the Magic Castle theme — night sky, stars and fireworks
+// from the very first screen. (Skin screen lets kids change it.)
+applySkin(SKINS.find(s=>s.k==='magic'));
 function setLang(code){
   cur=code;
   document.querySelectorAll('[data-i]').forEach(el=>{ const k=el.dataset.i; if(T[k]&&T[k][code]) el.textContent=T[k][code]; });
