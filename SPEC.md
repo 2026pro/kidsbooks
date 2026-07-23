@@ -1,5 +1,7 @@
-# KidsBooks — Multilingual Online Children's Bookshop Mobile App
-## Full Product & Technical Specification (v1.0)
+# МИНИЙ НАЙЗ (Minii Naiz / "My Friend") — Multilingual Children's E-Bookshop Mobile App
+## Full Product & Technical Specification (v1.1)
+
+> **Brand:** МИНИЙ НАЙЗ — цахим номын дэлгүүр (digital bookstore). Working/technical name in code remains `kidsbooks`; user-facing brand is МИНИЙ НАЙЗ.
 
 **Project:** Online children's bookshop mobile app for the Mongolian market
 **Languages:** Mongolian (mn), English (en), French (fr), Spanish (es), Korean (ko), Chinese (zh), Russian (ru)

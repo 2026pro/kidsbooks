@@ -1,4 +1,4 @@
-# KidsBooks — Multilingual Children's Bookshop App (Flutter + Firebase)
+# МИНИЙ НАЙЗ (kidsbooks) — Multilingual Children's E-Bookshop App (Flutter + Firebase)
 
 Online children's bookstore for Mongolia: 7-language UI (mn/en/fr/es/ko/zh/ru),
 QPay payments, home delivery tracking, kids' profiles with Kid Mode, built-in
