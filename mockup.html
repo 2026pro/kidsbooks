@@ -12,6 +12,38 @@
   body { background:#EAE6F4; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px; gap:14px; }
   /* demo helper controls hidden — the app speaks for itself */
   h1.pagetitle, .toolbar { display:none; }
+  /* ---- login & notifications ---- */
+  .gbtn { display:flex; align-items:center; justify-content:center; gap:10px; background:#fff; color:#2B2350;
+    font-weight:800; border:none; border-radius:16px; padding:14px; width:100%; cursor:pointer;
+    box-shadow:0 3px 14px rgba(43,35,80,.14); font-size:14.5px; transition:transform .15s; }
+  .gbtn:hover { transform:translateY(-2px); } .gbtn:active { transform:scale(.97); }
+  .sheetov { position:absolute; inset:0; background:rgba(20,15,45,.45); z-index:90; display:none;
+    align-items:flex-end; border-radius:37px; }
+  .sheet { background:#fff; width:100%; border-radius:24px 24px 37px 37px; padding:18px 16px 26px;
+    animation:sheetUp .4s cubic-bezier(.22,1,.36,1); }
+  @keyframes sheetUp { from{transform:translateY(140px); opacity:0} }
+  .acct { display:flex; gap:12px; align-items:center; padding:11px 10px; border-radius:14px; cursor:pointer; }
+  .acct:hover { background:#F3EFFB; }
+  .acct .ai { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#6C4FE0,#9F7BEA);
+    color:#fff; display:flex; align-items:center; justify-content:center; font-weight:900; flex-shrink:0; }
+  .toast { position:absolute; top:46px; left:12px; right:12px; z-index:85; background:rgba(255,255,255,.96);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:16px; padding:11px 14px;
+    display:flex; gap:11px; align-items:center; box-shadow:0 12px 32px rgba(43,35,80,.28); cursor:pointer;
+    animation:toastIn .45s cubic-bezier(.22,1,.36,1); }
+  @keyframes toastIn { from{transform:translateY(-90px); opacity:0} }
+  .toast.out { animation:toastOut .35s ease forwards; }
+  @keyframes toastOut { to{transform:translateY(-100px); opacity:0} }
+  .toast .ti { font-size:22px; flex-shrink:0; }
+  .toast b { font-size:12.5px; display:block; color:#2B2350; }
+  .toast small { font-size:11.5px; color:#8E86A8; font-weight:700; }
+  .bell { position:relative; }
+  .badge { position:absolute; top:-5px; right:-5px; min-width:17px; height:17px; border-radius:9px;
+    background:#E4405F; color:#fff; font-size:10px; font-weight:900; display:flex; align-items:center;
+    justify-content:center; padding:0 4px; border:2px solid var(--bg,#F6F4FB); }
+  .nitem { display:flex; gap:12px; align-items:flex-start; }
+  .nitem .ni { width:40px; height:40px; border-radius:13px; background:var(--chip,#EDE7FD);
+    display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+  .nitem time { margin-left:auto; font-size:10.5px; color:var(--muted,#8E86A8); font-weight:700; flex-shrink:0; }
   h1.pagetitle { color:#2B2350; font-size:18px; }
   .toolbar { display:flex; gap:7px; flex-wrap:wrap; justify-content:center; max-width:900px; }
   .toolbar button { border:none; background:#fff; border-radius:18px; padding:7px 13px; font-weight:800; cursor:pointer; color:#2B2350; box-shadow:0 2px 6px rgba(43,35,80,.08); font-size:12px; }
@@ -336,7 +368,34 @@
     <div class="h" data-i="obSkinTitle">Аппын загвараа сонго</div>
     <div class="sub" style="margin-bottom:12px" data-i="obSkinSub">Дараа нь тохиргооноос солих боломжтой</div>
     <div class="skingrid" id="skinGrid"></div>
-    <button class="btn" onclick="go('home')" data-i="enterApp">Апп руу орох</button>
+    <button class="btn" onclick="go('login')" data-i="enterApp">Апп руу орох</button>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="screen" id="scr-login">
+    <div style="text-align:center;margin:36px 0 10px">
+      <div class="brandmini"><div class="bm">📖</div>
+        <div><b style="color:var(--primary,#6C4FE0);font-size:16px">МИНИЙ НАЙЗ</b>
+        <div class="sub" style="margin:0;font-size:10.5px" data-i="tagline">Цахим номын дэлгүүр</div></div></div>
+    </div>
+    <div class="card" style="height:150px;padding:0;overflow:hidden" id="loginArt"></div>
+    <div class="h" style="text-align:center" data-i="loginTitle">Тавтай морил!</div>
+    <div class="sub" style="text-align:center;margin-bottom:18px" data-i="loginSub">Gmail хаягаараа нэвтэрч бүх боломжийг нээгээрэй</div>
+    <button class="gbtn" onclick="openAccounts()">
+      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C36.9 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
+      <span data-i="googleBtn">Google-ээр нэвтрэх</span>
+    </button>
+    <div style="height:10px"></div>
+    <button class="btn line" onclick="finishLogin('Зочин','')" data-i="guestBtn">Зочноор үзэх</button>
+    <div class="note">🔒 <span data-i="loginNote">Таны мэдээлэл найдвартай хамгаалагдана</span></div>
+  </div>
+
+  <!-- NOTIFICATIONS -->
+  <div class="screen" id="scr-notifs">
+    <div class="topbar"><button class="back" onclick="go('home')">←</button>
+      <div class="h" style="font-size:17px" data-i="notifTitle">Мэдэгдэл</div><div class="grow"></div>
+      <button class="back" title="Push" onclick="enablePush()">🔔</button></div>
+    <div id="notifList"></div>
   </div>
 
   <!-- HOME -->
@@ -345,7 +404,7 @@
       <div class="pfp" id="homePfp">🦊</div>
       <div><b style="font-size:16px;color:var(--ink,#2B2350)" data-i="hello">Сайн уу, Энхрий!</b>
         <div class="sub" style="margin:0" data-i="whatread">Ямар ном хайж байна?</div></div>
-      <div class="bell">🔔</div>
+      <div class="bell" onclick="openNotifs()">🔔<span class="badge" id="bellBadge" style="display:none">0</span></div>
     </div>
     <div class="search" onclick="go('all')">🔍 <span data-i="searchHint">Ном, зохиолч хайх</span></div>
     <div class="hero" onclick="go('detail')">
@@ -471,7 +530,7 @@
     </div>
     <button class="btn line" data-i="openBank">Банкны апп нээх</button>
     <div style="height:8px"></div>
-    <button class="btn" onclick="go('track')" data-i="checkPay">Төлбөр шалгах</button>
+    <button class="btn" onclick="paySuccess()" data-i="checkPay">Төлбөр шалгах</button>
     <div class="note">⏳ <span data-i="qrNote">QR кодыг банкны апп-аар уншуулж төлбөрөө хийнэ үү</span></div>
   </div>
 
@@ -555,6 +614,23 @@
     <div class="two">
       <button class="btn line">←</button>
       <button class="btn">→</button>
+    </div>
+  </div>
+
+  <!-- Google account picker sheet -->
+  <div class="sheetov" id="acctSheet" onclick="if(event.target===this)closeAccounts()">
+    <div class="sheet">
+      <b style="font-size:14px;color:#2B2350" data-i="chooseAccount">Акаунт сонгоно уу</b>
+      <div style="height:8px"></div>
+      <div class="acct" onclick="finishLogin('Ухрал','uchral4868@gmail.com')">
+        <div class="ai">У</div>
+        <div><b style="font-size:13px;color:#2B2350">Ухрал</b><div style="font-size:11.5px;color:#8E86A8">uchral4868@gmail.com</div></div></div>
+      <div class="acct" onclick="finishLogin('Энхрий','enkhrii.demo@gmail.com')">
+        <div class="ai" style="background:linear-gradient(135deg,#F2762E,#E4405F)">Э</div>
+        <div><b style="font-size:13px;color:#2B2350">Энхрий</b><div style="font-size:11.5px;color:#8E86A8">enkhrii.demo@gmail.com</div></div></div>
+      <div class="acct" onclick="closeAccounts()">
+        <div class="ai" style="background:#EDE7FD;color:#6C4FE0">+</div>
+        <b style="font-size:13px;color:#2B2350" data-i="otherAcct">Өөр акаунт ашиглах</b></div>
     </div>
   </div>
 
@@ -656,6 +732,14 @@ const T = {
  navLib:{mn:'Сан',en:'Library',fr:'Biblio',es:'Biblio',ko:'서재',zh:'书库',ru:'Книги'},
  navProfile:{mn:'Профайл',en:'Profile',fr:'Profil',es:'Perfil',ko:'프로필',zh:'我的',ru:'Профиль'},
  coupon:{mn:'Купон код',en:'Coupon code',fr:'Code promo',es:'Código de cupón',ko:'쿠폰 코드',zh:'优惠码',ru:'Промокод'},
+ loginTitle:{mn:'Тавтай морил!',en:'Welcome!',fr:'Bienvenue !',es:'¡Bienvenido!',ko:'환영합니다!',zh:'欢迎！',ru:'Добро пожаловать!'},
+ loginSub:{mn:'Gmail хаягаараа нэвтэрч бүх боломжийг нээгээрэй',en:'Sign in with Gmail to unlock everything',fr:'Connectez-vous avec Gmail',es:'Inicia sesión con Gmail',ko:'Gmail로 로그인하세요',zh:'使用Gmail登录解锁全部功能',ru:'Войдите через Gmail'},
+ googleBtn:{mn:'Google-ээр нэвтрэх',en:'Sign in with Google',fr:'Se connecter avec Google',es:'Iniciar con Google',ko:'Google로 로그인',zh:'使用Google登录',ru:'Войти через Google'},
+ guestBtn:{mn:'Зочноор үзэх',en:'Continue as guest',fr:'Continuer en invité',es:'Continuar como invitado',ko:'게스트로 계속',zh:'以访客身份继续',ru:'Продолжить как гость'},
+ loginNote:{mn:'Таны мэдээлэл найдвартай хамгаалагдана',en:'Your data is protected',fr:'Vos données sont protégées',es:'Tus datos están protegidos',ko:'정보는 안전하게 보호됩니다',zh:'您的信息受到保护',ru:'Ваши данные защищены'},
+ chooseAccount:{mn:'Акаунт сонгоно уу',en:'Choose an account',fr:'Choisissez un compte',es:'Elige una cuenta',ko:'계정 선택',zh:'选择帐号',ru:'Выберите аккаунт'},
+ otherAcct:{mn:'Өөр акаунт ашиглах',en:'Use another account',fr:'Utiliser un autre compte',es:'Usar otra cuenta',ko:'다른 계정 사용',zh:'使用其他帐号',ru:'Другой аккаунт'},
+ notifTitle:{mn:'Мэдэгдэл',en:'Notifications',fr:'Notifications',es:'Notificaciones',ko:'알림',zh:'通知',ru:'Уведомления'},
 };
 let cur='mn';
 
@@ -877,6 +961,72 @@ document.querySelectorAll('.lcbk2').forEach(e=>e.style.background=`url(${IMG.bk2
 const hb=document.querySelector('.hero');
 hb.style.background=`linear-gradient(100deg, rgba(24,16,74,.9) 36%, rgba(24,16,74,.06)), url(${IMG.th1}) center/cover`;
 const ha=hb.querySelector('.art'); if(ha) ha.style.display='none';
+
+// ---------- 🔐 login + 🔔 notification system ----------
+let USER={name:'Энхрий',email:''};
+function openAccounts(){ document.getElementById('acctSheet').style.display='flex'; }
+function closeAccounts(){ document.getElementById('acctSheet').style.display='none'; }
+function finishLogin(name,email){
+  closeAccounts(); USER={name,email};
+  const g=document.querySelector('#scr-home .greet b');
+  g.removeAttribute('data-i'); g.textContent=`Сайн уу, ${name}!`;
+  go('home');
+  setTimeout(()=>notif('👋','Тавтай морил, '+name+'!','МИНИЙ НАЙЗ-д нэгдсэнд баяртай байна 🎉'),800);
+  scheduleDemoNotifs();
+}
+const NOTIFS=[
+  {ic:'🆕',t:'Шинэ ном ирлээ',b:'«Сарны үлгэр» — одоо худалдаанд гарлаа',time:'10:12'},
+  {ic:'🎉',t:'Арга хэмжээ',b:'Бямба гарагт «Номын баяр» — 12:00, Хүүхдийн номын ордон',time:'09:30'},
+  {ic:'📰',t:'Мэдээ',b:'7 хоногийн шилдэг 10 хүүхдийн ном тодорлоо',time:'Өчигдөр'},
+];
+function updateBadge(n){
+  const b=document.getElementById('bellBadge');
+  const c=(parseInt(b.textContent)||0)+n;
+  b.textContent=c; b.style.display=c>0?'flex':'none';
+}
+function notif(ic,t,b){
+  const now=new Date();
+  NOTIFS.unshift({ic,t,b,time:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')});
+  updateBadge(1);
+  const ph=document.querySelector('.phone');
+  const el=document.createElement('div'); el.className='toast';
+  el.innerHTML=`<span class="ti">${ic}</span><div><b>${t}</b><small>${b}</small></div>`;
+  el.onclick=()=>{ el.remove(); openNotifs(); };
+  ph.appendChild(el);
+  setTimeout(()=>{ el.classList.add('out'); setTimeout(()=>el.remove(),380); },4200);
+  if(typeof Notification!=='undefined' && Notification.permission==='granted'){
+    try{ new Notification('МИНИЙ НАЙЗ — '+t,{body:b}); }catch(e){}
+  }
+}
+function openNotifs(){
+  const list=document.getElementById('notifList');
+  list.innerHTML=NOTIFS.map(n=>`<div class="card nitem">
+    <div class="ni">${n.ic}</div>
+    <div><b style="font-size:13px">${n.t}</b><div class="sub" style="margin:2px 0 0">${n.b}</div></div>
+    <time>${n.time}</time></div>`).join('');
+  const b=document.getElementById('bellBadge'); b.textContent='0'; b.style.display='none';
+  go('notifs');
+}
+function enablePush(){
+  if(typeof Notification==='undefined'){ notif('ℹ️','Push дэмжигдэхгүй','Энэ орчинд браузерын мэдэгдэл алга'); return; }
+  Notification.requestPermission().then(p=>{
+    if(p==='granted') notif('✅','Push идэвхжлээ','Одоо жинхэнэ мэдэгдэл очно');
+  });
+}
+let __sched=false;
+function scheduleDemoNotifs(){
+  if(__sched) return; __sched=true;
+  setTimeout(()=>notif('🆕','Шинэ ном','«Далайн нууц» таны насны ангилалд нэмэгдлээ'),9000);
+  setTimeout(()=>notif('🎉','Арга хэмжээ','Ням гарагт зохиолчтой уулзалт — бүртгэл нээлттэй'),22000);
+  setTimeout(()=>notif('📰','Мэдээ','Энэ 7 хоногийн онцлох: Оддын баатар №1 боллоо'),40000);
+}
+function paySuccess(){
+  notif('✅','Төлбөр амжилттай','₮52,800 — QPay-ээр төлөгдлөө');
+  setTimeout(()=>notif('🚚','Хүргэлтийн мэдээлэл','Захиалга #BK-240718 хүргэлтэд гарлаа — 16:30-18:00'),2800);
+  go('track');
+}
+// login screen art
+document.getElementById('loginArt').style.background=`url(${IMG.th1}) center/cover`;
 
 applySkin(SKINS[0]);
 </script>
